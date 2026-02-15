@@ -1,0 +1,281 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  /* This ensures the background image stays fixed while columns scroll */
+  background-image: url('assets/images/background.jpg'); /* Ensure path is correct */
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ================= BOARD ================= */
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: stretch;
+}
+
+/* ================= TITLE ================= */
+.board-title {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 15px;
+  color: #0a3cff;
+}
+
+/* ================= SEARCH ================= */
+.search {
+  width:  80%;
+  max-width: 500px;
+  margin: 0 auto 20px;
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+/* ================= COLUMN ================= */
+.column {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px); /* Blurs the background behind the column */
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  
+  border-radius: 18px;
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: calc(100vh - 250px); 
+  height: auto;
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.task-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 10px;
+  min-height: 150px;
+}
+
+/* ================= HEADER ================= */
+.column-header {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 12px;
+  /*flex-shrink: 0;*/
+}
+
+/* ================= COLUMN COLORS ================= */
+.todo { border-top: 6px solid #3b82f6; }
+.progress { border-top: 6px solid #8b5cf6; }
+.done { border-top: 6px solid #22c55e; }
+.delivered { border-top: 6px solid #16a34a; }
+
+/* ================= TASK LIST ================= */
+.task-list {
+  flex: 1 ;            /* 🔒 stable grow */
+  overflow-y: auto;
+  padding-right: 6px;
+  /*min-height: 0;  */           /* 🔑 prevents jump */
+}
+
+/* scrollbar */
+.task-list::-webkit-scrollbar {
+  width: 6px;
+}
+.task-list::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 6px;
+}
+
+/* ================= TASK CARD ================= */
+.task-card {
+  background: rgb(107, 190, 184);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+
+  user-select: none;
+  /*touch-action: manipulation;*/
+
+  box-shadow: 0 4px 10px rgba(14, 0, 0, 0.1);
+}
+
+.task-card.high { border-left: 6px solid #dc2626; }
+.task-card.medium { border-left: 6px solid #f59e0b; }
+.task-card.low { border-left: 6px solid #25d483; }
+
+/* ================= FOOTER ================= */
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+/* ================= PRIORITY ================= */
+.priority {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.priority.high { background: #fee2e2; }
+.priority.medium { background: #fef3c7; }
+.priority.low { background: #e0f2fe; }
+
+/* ================= ADD TASK BUTTON ================= */
+.add-task {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #573827;
+  color: #069be0;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;       /* 🔥 prevents jumping */
+  position: sticky;    /* 🔥 prevents drag reflow */
+  bottom: 10px;
+}
+
+/* ================= MODAL ================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal {
+  background: rgb(128, 78, 78);
+  padding: 30px;
+  border-radius: 20px;
+
+  width:  100%;
+  max-width: 450px;          /* 🔥 BIGGER POPUP */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  color: white;
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal input,
+.modal textarea,
+.modal select {
+  width: 100%;
+  margin-bottom: 15px; /* Better spacing between fields */
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+}
+
+.modal-actions .save {
+  background: #069be0;
+  color: white;
+}
+
+.modal-actions .cancel {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* ================= CDK DRAG FIX ================= */
+.cdk-drag-placeholder {
+  opacity: 0;
+  display: none;
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  border-radius: 10px;
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 1024px) {
+  .board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .board-title {
+    font-size: 28px;
+  }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 600px) {
+  .board {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+ .column {
+    margin-bottom: 15px;
+    height: auto; /* Let content dictate height */
+    min-height: 350px;
+  }
+
+  .task-container {
+    min-height: 120px;
+  }
+
+  .add-task {
+    margin-top: 10px;
+  }
+
+  .task-list {
+    max-height: 320px;
+  }
+
+  .board-title {
+    font-size: 24px;
+    margin-top: 10px;
+  }
+
+  .search {
+    width: 90%;
+  }
+
+
+  .modal {
+    max-width: 95%;
+  }
+
+  /* Prevent the background image from making the text unreadable */
+  body {
+    background-attachment: scroll; 
+  }
+}
