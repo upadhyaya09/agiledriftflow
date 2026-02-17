@@ -1,11 +1,20 @@
 <h1 class="board-title">AgileDrift Board</h1>
 
-<input
-  class="search"
-  type="text"
-  placeholder="Search tasks..."
-  [(ngModel)]="searchText"
-/>
+<div class="filter-container">
+  <input
+    class="search"
+    type="text"
+    placeholder="Search tasks..."
+    [(ngModel)]="searchText"
+  />
+
+  <select class="priority-filter" [(ngModel)]="selectedPriority">
+    <option value="All">All Priorities</option>
+    <option value="High">High Priority</option>
+    <option value="Medium">Medium Priority</option>
+    <option value="Low">Low Priority</option>
+  </select>
+</div>
 
 <div class="board">
 
@@ -44,9 +53,12 @@
     </div>
 
     <!-- ✅ OUTSIDE DROP LIST -->
-    <button class="add-task" (click)="openAddModal()">
+    <div class="column-footer">
+      <button class="add-task" (click)="openAddModal()">
         + Add Task
-    </button>
+      </button>
+    </div>
+    
 
   </div>
 

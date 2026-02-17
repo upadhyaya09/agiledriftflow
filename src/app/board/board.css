@@ -4,11 +4,12 @@ html, body {
   width: 100%;
   min-height: 100%;
   /* This ensures the background image stays fixed while columns scroll */
-  background-image: url('assets/images/background.jpg'); /* Ensure path is correct */
+  background-image: url('../../assets/images/background.jpg'); /* Ensure path is correct */
   background-attachment: fixed;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  overflow: hidden; /* Prevents the whole page from scrolling */
 }
 
 /* ================= BOARD ================= */
@@ -18,6 +19,7 @@ html, body {
   gap: 20px;
   padding: 20px;
   width: 100%;
+  height: calc(100vh - 150px); /* Sets the board area height */
   box-sizing: border-box;
   align-items: stretch;
 }
@@ -26,26 +28,49 @@ html, body {
 .board-title {
   text-align: center;
   font-size: 36px;
-  margin-bottom: 15px;
-  color: #0a3cff;
+  margin: 15px 0;
+  color: #1908b6; /* White looks better on dark backgrounds */
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
+
+.filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.priority-filter {
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  margin-left: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  outline: none;
+}
+
 
 /* ================= SEARCH ================= */
 .search {
   width:  80%;
   max-width: 500px;
-  margin: 0 auto 20px;
+  margin: 0 auto 15px;
   display: block;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 25px; /* Pill shape search */
+  border: none;
+  background: rgba(243, 200, 200, 0.9);
 }
 
 /* ================= COLUMN ================= */
 .column {
   background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(8px); /* Blurs the background behind the column */
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px); /* Blurs the background behind the column */
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   
   border-radius: 18px;
@@ -54,11 +79,12 @@ html, body {
   display: flex;
   flex-direction: column;
 
-  min-height: calc(100vh - 250px); 
-  height: auto;
-
+  /* FIXED HEIGHT for scrolling effect */
+  height: 100%; 
+  max-height: 100%; 
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: hidden; /* Keeps the column static */
+  position: relative;
 }
 
 .task-container {
@@ -66,6 +92,17 @@ html, body {
   overflow-y: auto;
   padding-bottom: 10px;
   min-height: 150px;
+  padding-right: 5px;
+  margin-bottom: 5px;
+}
+
+/* Scrollbar styling for the container */
+.task-container::-webkit-scrollbar {
+  width: 5px;
+}
+.task-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
 }
 
 /* ================= HEADER ================= */
@@ -73,7 +110,8 @@ html, body {
   text-align: center;
   font-weight: 700;
   margin-bottom: 12px;
-  /*flex-shrink: 0;*/
+  color: rgb(24, 29, 1); /* Made white for better contrast on glass */
+  flex-shrink: 0;
 }
 
 /* ================= COLUMN COLORS ================= */
@@ -101,15 +139,17 @@ html, body {
 
 /* ================= TASK CARD ================= */
 .task-card {
-  background: rgb(107, 190, 184);
+  background: rgb(2, 78, 73);
   padding: 12px;
   border-radius: 10px;
   margin-bottom: 10px;
 
-  user-select: none;
-  /*touch-action: manipulation;*/
-
   box-shadow: 0 4px 10px rgba(14, 0, 0, 0.1);
+  cursor: grab;
+}
+
+.task-card:active {
+  cursor: grabbing;
 }
 
 .task-card.high { border-left: 6px solid #dc2626; }
@@ -136,16 +176,23 @@ html, body {
 
 /* ================= ADD TASK BUTTON ================= */
 .add-task {
-  margin-top: 10px;
+  margin-top: auto;
   padding: 12px;
   border-radius: 12px;
   background: #573827;
   color: #069be0;
-  font-weight: 500;
+  font-weight: bold;
   cursor: pointer;
+  border: none;
   flex-shrink: 0;       /* 🔥 prevents jumping */
   position: sticky;    /* 🔥 prevents drag reflow */
   bottom: 10px;
+  transition: transform 0.2s ease;
+}
+
+.add-task:hover {
+  transform: scale(1.02);
+  background: #6d4732;
 }
 
 /* ================= MODAL ================= */

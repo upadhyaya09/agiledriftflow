@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 
 imports: [
   DragDropModule
@@ -17,6 +17,7 @@ imports: [
 export class BoardComponent {
 
   searchText = '';
+  selectedPriority: string = 'All'; // New variable for the filter
 
   tasks: any[] = [];
 
@@ -49,13 +50,19 @@ export class BoardComponent {
   }
 
   filterTasks(status: string) {
-    return this.tasks.filter(t =>
-      t.status === status &&
-      (
-        t.title.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        (t.description ?? '').toLowerCase().includes(this.searchText.toLowerCase())
-      )
-    );
+    return this.tasks.filter(t => {
+      // 1. Check Status
+      const matchStatus = t.status === status;
+
+      // 2. Check Search Text
+      const searchTextLower = this.searchText.toLowerCase();
+      const matchSearch = t.title.toLowerCase().includes(searchTextLower) ||
+                        (t.description ?? '').toLowerCase().includes(searchTextLower);
+      // 3. Check Priority Filter
+      const matchPriority = this.selectedPriority === 'All' || t.priority === this.selectedPriority;
+
+      return matchStatus && matchSearch && matchPriority;
+    });
   }
 
   // ---------- MODAL ----------
@@ -102,14 +109,16 @@ export class BoardComponent {
   }
 
   // ---------- DRAG & DROP ----------
-  drop(event: any, status: string) {
-  if (!event.previousContainer.data || !event.container.data) return;
-
+  drop(event: CdkDragDrop<any[]>, newStatus: string) {
+  
   const task = event.previousContainer.data[event.previousIndex];
-  task.status = status;
+    if (task) {
+        task.status = newStatus;
+    }
+  
 
-  this.sortTasks();
-}
+    this.sortTasks();
+  }
 
 
   // ---------- PRIORITY SORT ----------
@@ -117,4 +126,5 @@ export class BoardComponent {
     const order: any = { High: 1, Medium: 2, Low: 3 };
     this.tasks.sort((a, b) => order[a.priority] - order[b.priority]);
   }
+
 }
