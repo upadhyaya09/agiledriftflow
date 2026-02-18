@@ -14,27 +14,30 @@
     <option value="Medium">Medium Priority</option>
     <option value="Low">Low Priority</option>
   </select>
+
+  <button class="add-col-header-btn" (click)="addColumn()">+ Add Column</button>
 </div>
 
-<div class="board">
+<div class="board" cdkDropListGroup>
 
-  <!-- TO DO -->
-  <div class="column todo">
+  <div class="column" *ngFor="let col of columns; let i = index">
+    
+    <div class="column-header-container">
+      <h3 class="column-header">{{ col.title }}</h3>
+      <button class="remove-col-btn" (click)="removeColumn(i)" *ngIf="col.status !== 'todo'">×</button>
+    </div>
 
-    <h3 class="column-header">To Do</h3>
-
-    <!-- ✅ ONLY THIS IS DROPLIST -->
     <div class="task-container"
         cdkDropList
-        id="todoList"
-        [cdkDropListData]="todo"
-        [cdkDropListConnectedTo]="['progressList','doneList','deliveredList']"
-        [cdkDropListSortingDisabled]="true"
-        (cdkDropListDropped)="drop($event, 'todo')">
+        [id]="col.id"
+        [cdkDropListData]="filterTasks(col.status)"
+        [cdkDropListConnectedTo]="connectedTo"
+        (cdkDropListDropped)="drop($event, col.status)">
 
       <div class="task-card {{ task.priority | lowercase }}"
-           *ngFor="let task of todo"
+           *ngFor="let task of filterTasks(col.status)"
            cdkDrag>
+        
         <h4>{{ task.title }}</h4>
         <p>{{ task.description }}</p>
 
@@ -49,121 +52,14 @@
           </div>
         </div>
       </div>
-
     </div>
 
-    <!-- ✅ OUTSIDE DROP LIST -->
-    <div class="column-footer">
-      <button class="add-task" (click)="openAddModal()">
+    <div class="column-footer" *ngIf="col.status === 'todo'">
+      <button class="add-task" (click)="openAddModal('todo')">
         + Add Task
       </button>
     </div>
-    
-
   </div>
-
-
-
-  <!-- IN PROGRESS -->
-  <!-- PROGRESS -->
-  <div class="column progress">
-    <h3 class="column-header">In Progress</h3>
-
-    <!-- ✅ SCROLL AREA -->
-    <div class="task-container"
-        cdkDropList
-        id="progressList"
-        [cdkDropListData]="progress"
-        [cdkDropListConnectedTo]="['todoList','doneList','deliveredList']"
-        [cdkDropListSortingDisabled]="true"
-        (cdkDropListDropped)="drop($event, 'progress')">
-
-      <div class="task-card {{ task.priority | lowercase }}"
-          *ngFor="let task of progress"
-          cdkDrag>
-        <h4>{{ task.title }}</h4>
-        <p>{{ task.description }}</p>
-        <div class="task-footer">
-          <span class="priority {{ task.priority | lowercase }}">
-             {{ task.priority }}
-          </span>
-
-          <div class="actions">
-             <button (click)="openEditModal(task)">✏️</button>
-             <button (click)="deleteTask(task)">🗑</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DONE -->
-  <!-- DONE -->
-  <div class="column done">
-
-    <h3 class="column-header">Done</h3>
-
-      <!-- ✅ SCROLL AREA -->
-    <div class="task-container" 
-        cdkDropList
-        id="doneList"
-        [cdkDropListData]="done"
-        [cdkDropListConnectedTo]="['todoList','progressList','deliveredList']"
-        (cdkDropListDropped)="drop($event, 'done')">
-        
-      <div class="task-card {{ task.priority | lowercase }}"
-           *ngFor="let task of done"
-           cdkDrag>
-        <h4>{{ task.title }}</h4>
-        <p>{{ task.description }}</p>
-
-        <div class="task-footer">
-          <span class="priority {{ task.priority | lowercase }}">
-            {{ task.priority }}
-          </span>
-
-          <div class="actions">
-            <button (click)="openEditModal(task)">✏️</button>
-            <button (click)="deleteTask(task)">🗑</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DELIVERED -->
-  <!-- DELIVERED -->
-  <div class="column delivered">
-    <h3 class="column-header">Delivered</h3>
-
-      <!-- ✅ SCROLL AREA -->
-    <div class="task-container"
-         cdkDropList
-        id="deliveredList"
-        [cdkDropListData]="delivered"
-        [cdkDropListConnectedTo]="['todoList','progressList','doneList']"
-        (cdkDropListDropped)="drop($event, 'delivered')">
-
-      <div class="task-card {{ task.priority | lowercase }}"
-           *ngFor="let task of delivered"
-           cdkDrag>
-        <h4>{{ task.title }}</h4>
-        <p>{{ task.description }}</p>
-
-        <div class="task-footer">
-          <span class="priority {{ task.priority | lowercase }}">
-            {{ task.priority }}
-          </span>
-
-          <div class="actions">
-            <button (click)="openEditModal(task)">✏️</button>
-            <button (click)="deleteTask(task)">🗑</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
 </div>
 

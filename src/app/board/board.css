@@ -14,14 +14,23 @@ html, body {
 
 /* ================= BOARD ================= */
 .board {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-direction: row;
   gap: 20px;
   padding: 20px;
-  width: 100%;
-  height: calc(100vh - 150px); /* Sets the board area height */
+  height: calc(100vh - 180px);
   box-sizing: border-box;
-  align-items: stretch;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  align-items: flex-start;
+}
+
+/* Custom Horizontal Scrollbar for the Board */
+.board::-webkit-scrollbar {
+  height: 8px;
+}
+.board::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
 }
 
 /* ================= TITLE ================= */
@@ -38,7 +47,8 @@ html, body {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
 }
 
 .priority-filter {
@@ -46,19 +56,33 @@ html, body {
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.9);
-  margin-left: 10px;
   cursor: pointer;
-  font-family: inherit;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   outline: none;
 }
 
+/* ================= DYNAMIC ACTION BUTTONS ================= */
+.add-col-header-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #1908b6;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: background 0.2s;
+}
+
+.add-col-header-btn:hover {
+  background: #0a3cff;
+}
 
 /* ================= SEARCH ================= */
 .search {
   width:  80%;
-  max-width: 500px;
-  margin: 0 auto 15px;
+  max-width: 400px;
+  margin: 0;
   display: block;
   padding: 12px;
   border-radius: 25px; /* Pill shape search */
@@ -68,6 +92,7 @@ html, body {
 
 /* ================= COLUMN ================= */
 .column {
+  flex: 0 0 320px;
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px); /* Blurs the background behind the column */
   -webkit-backdrop-filter: blur(12px);
@@ -78,6 +103,7 @@ html, body {
 
   display: flex;
   flex-direction: column;
+  flex: 0 0 300px; /* Keep columns at a consistent width */
 
   /* FIXED HEIGHT for scrolling effect */
   height: 100%; 
@@ -85,6 +111,7 @@ html, body {
   box-sizing: border-box;
   overflow: hidden; /* Keeps the column static */
   position: relative;
+  border-top: 6px solid #3b82f6; /* Default border */
 }
 
 .task-container {
@@ -106,13 +133,32 @@ html, body {
 }
 
 /* ================= HEADER ================= */
-.column-header {
-  text-align: center;
-  font-weight: 700;
+.column-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
-  color: rgb(24, 29, 1); /* Made white for better contrast on glass */
   flex-shrink: 0;
 }
+
+.column-header {
+  margin: 0;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.remove-col-btn {
+  background: transparent;
+  border: none;
+  color: #1a1a1a;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 5px;
+  transition: color 0.2s;
+}
+
+.remove-col-btn:hover { color: #dc2626; }
 
 /* ================= COLUMN COLORS ================= */
 .todo { border-top: 6px solid #3b82f6; }
@@ -137,9 +183,28 @@ html, body {
   border-radius: 6px;
 }
 
+/* ================= TASK CONTAINER (Internal Scroll) ================= */
+.task-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.task-container::-webkit-scrollbar { width: 5px; }
+.task-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+
+.column-footer { 
+  padding-top: 10px; 
+  flex-shrink: 0;
+}
+
 /* ================= TASK CARD ================= */
 .task-card {
   background: rgb(2, 78, 73);
+  color: white;
   padding: 12px;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -168,6 +233,7 @@ html, body {
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 6px;
+  color: #1a1a1a;
 }
 
 .priority.high { background: #fee2e2; }
@@ -285,14 +351,15 @@ html, body {
 /* ================= MOBILE ================= */
 @media (max-width: 600px) {
   .board {
-    grid-template-columns: 1fr;
-    padding: 10px;
+    flex-direction: column;    /* Stack columns on mobile */
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
  .column {
-    margin-bottom: 15px;
-    height: auto; /* Let content dictate height */
-    min-height: 350px;
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: 500px;         /* Limit height on mobile */
   }
 
   .task-container {
