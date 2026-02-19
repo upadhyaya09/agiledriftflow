@@ -22,15 +22,22 @@ html, body {
   box-sizing: border-box;
   overflow-x: auto; /* Enable horizontal scrolling */
   align-items: flex-start;
+  scroll-behavior: smooth; /* Smooth scrolling for a premium feel */
 }
 
 /* Custom Horizontal Scrollbar for the Board */
 .board::-webkit-scrollbar {
-  height: 8px;
+  height: 10px;
+}
+.board::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 .board::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 /* ================= TITLE ================= */
@@ -92,7 +99,10 @@ html, body {
 
 /* ================= COLUMN ================= */
 .column {
-  flex: 0 0 320px;
+  flex: 1 0 calc(25% - 20px);
+  min-width: 300px; 
+  max-width: 450px; /* Prevents columns from getting too wide on huge monitors */
+
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px); /* Blurs the background behind the column */
   -webkit-backdrop-filter: blur(12px);
@@ -103,8 +113,7 @@ html, body {
 
   display: flex;
   flex-direction: column;
-  flex: 0 0 300px; /* Keep columns at a consistent width */
-
+  
   /* FIXED HEIGHT for scrolling effect */
   height: 100%; 
   max-height: 100%; 
@@ -165,6 +174,37 @@ html, body {
 .progress { border-top: 6px solid #8b5cf6; }
 .done { border-top: 6px solid #22c55e; }
 .delivered { border-top: 6px solid #16a34a; }
+
+/* ================= EMPTY STATE ================= */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Centers it vertically in the container */
+  min-height: 200px;
+  color: rgba(255, 255, 255, 0.5); /* Soft white text */
+  text-align: center;
+  pointer-events: none; /* Allows cards to be dropped through the message */
+  animation: fadeIn 0.5s ease-in;
+}
+
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+.empty-state p {
+  font-size: 14px;
+  margin: 0;
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ================= TASK LIST ================= */
 .task-list {

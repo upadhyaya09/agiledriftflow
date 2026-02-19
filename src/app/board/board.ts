@@ -56,15 +56,26 @@ export class BoardComponent {
   }
 
   removeColumn(index: number) {
-  if (this.columns[index].status === 'todo') {
-    alert("You cannot remove the To Do column.");
-    return;
-  }
+    if (this.columns[index].status === 'todo') {
+      alert("You cannot remove the To Do column.");
+      return;
+    }
   
-  if (confirm(`Are you sure you want to delete the "${this.columns[index].title}" column?`)) {
-    this.columns.splice(index, 1);
+    if (confirm(`Are you sure you want to delete the "${this.columns[index].title}" column?`)) {
+      this.columns.splice(index, 1);
+    }
+ }
+
+   getEmptyStateIcon(status: string): string {
+    switch (status) {
+       case 'todo': return '📝';      // Notepad for To Do
+       case 'progress': return '⚡';  // Lightning for In Progress
+       case 'done': return '✅';      // Checkmark for Done
+       case 'delivered': return '🚀';  // Rocket for Delivered
+       default: return '📂';          // Default folder icon
+    }
   }
-}
+
 
   //  UPDATED FILTER (Still used by the HTML loop)
   filterTasks(status: string) {

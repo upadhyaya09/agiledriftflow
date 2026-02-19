@@ -34,6 +34,11 @@
         [cdkDropListConnectedTo]="connectedTo"
         (cdkDropListDropped)="drop($event, col.status)">
 
+      <div class="empty-state" *ngIf="filterTasks(col.status).length === 0">
+           <div class="empty-icon">{{ getEmptyStateIcon(col.status) }}</div>
+           <p>No tasks in {{ col.title }}</p>
+      </div>
+
       <div class="task-card {{ task.priority | lowercase }}"
            *ngFor="let task of filterTasks(col.status)"
            cdkDrag>
