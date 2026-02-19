@@ -38,7 +38,9 @@ export class BoardComponent {
     title: '',
     description: '',
     priority: 'Medium',
-    status: 'todo'
+    status: 'todo',
+    createdAt: new Date(),
+    deadline: '' // Will hold the user input date
   };
 
   //  COLUMN MANAGEMENT
@@ -75,7 +77,15 @@ export class BoardComponent {
        default: return '📂';          // Default folder icon
     }
   }
-
+ 
+  // ADD THIS METHOD INSIDE THE CLASS
+  isOverdue(deadline: string): boolean {
+    if (!deadline) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day for accurate comparison
+    const dueDate = new Date(deadline);
+    return dueDate <= today;
+  }
 
   //  UPDATED FILTER (Still used by the HTML loop)
   filterTasks(status: string) {
@@ -107,7 +117,9 @@ export class BoardComponent {
       title: '',
       description: '',
       priority: 'Medium',
-      status: status
+      status: status ,
+      createdAt: new Date(),
+      deadline: '' // Will hold the user input date
     };
     this.showModal = true;
   }
@@ -125,7 +137,8 @@ export class BoardComponent {
     if (this.isEditMode && this.editTaskRef) {
       Object.assign(this.editTaskRef, this.newTask);
     } else {
-      this.tasks.push({ ...this.newTask });
+      const taskToAdd = { ...this.newTask, createdAt: new Date() };
+      this.tasks.push(taskToAdd);
     }
 
     this.sortTasks();
@@ -153,8 +166,22 @@ export class BoardComponent {
 
   // ---------- PRIORITY SORT ----------
   sortTasks() {
-    const order: any = { High: 1, Medium: 2, Low: 3 };
-    this.tasks.sort((a, b) => order[a.priority] - order[b.priority]);
+  const priorityOrder: any = { High: 1, Medium: 2, Low: 3 };
+
+  this.tasks.sort((a, b) => {
+      // 1. Sort by Priority
+     if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+       return priorityOrder[a.priority] - priorityOrder[b.priority];
+     }
+
+     // 2. Sort by Deadline (if priority is the same)
+     if (a.deadline && b.deadline) {
+       return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+     }
+
+     // 3. Sort by Creation Date (if deadline is also same or missing)
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+     });
   }
 
 }

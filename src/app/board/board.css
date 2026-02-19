@@ -156,6 +156,16 @@ html, body {
   color: #1a1a1a;
 }
 
+.task-count {
+  font-size: 14px;
+  color: rgba(247, 244, 244, 0.6); /* Slightly faded color */
+  background: rgba(114, 3, 241, 0.05);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
 .remove-col-btn {
   background: transparent;
   border: none;
@@ -301,6 +311,27 @@ html, body {
   background: #6d4732;
 }
 
+.task-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 5px;
+}
+
+.task-dates small {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Optional: Make the deadline red if it's very soon */
+.overdue {
+  color: #ff4d4d !important;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 71, 71, 0.3);
+}
+
 /* ================= MODAL ================= */
 .modal-backdrop {
   position: fixed;
@@ -339,6 +370,14 @@ html, body {
   border: none;
   font-family: inherit;
   box-sizing: border-box;
+}
+
+/* Modal Styling for the Date Input to match your theme */
+.modal input[type="date"] {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ccc;
+  color: #333;
+  cursor: pointer;
 }
 
 .modal-actions {

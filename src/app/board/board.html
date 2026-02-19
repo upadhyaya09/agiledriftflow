@@ -23,7 +23,10 @@
   <div class="column" *ngFor="let col of columns; let i = index">
     
     <div class="column-header-container">
-      <h3 class="column-header">{{ col.title }}</h3>
+      <h3 class="column-header">
+        {{ col.title }}
+        <span class="task-count">({{ filterTasks(col.status).length }})</span>
+      </h3>
       <button class="remove-col-btn" (click)="removeColumn(i)" *ngIf="col.status !== 'todo'">×</button>
     </div>
 
@@ -45,6 +48,15 @@
         
         <h4>{{ task.title }}</h4>
         <p>{{ task.description }}</p>
+
+        <div class="task-dates">
+          <small>📅 Created: {{ task.createdAt | date:'shortDate' }}</small>
+
+          <small *ngIf="task.deadline" [class.overdue]="isOverdue(task.deadline)">
+            🏁 Due: {{ task.deadline | date:'shortDate' }}
+            <span *ngIf="isOverdue(task.deadline)"> (Urgent!)</span>
+          </small>
+        </div>
 
         <div class="task-footer">
           <span class="priority {{ task.priority | lowercase }}">
@@ -75,6 +87,13 @@
 
     <input type="text" placeholder="Title" [(ngModel)]="newTask.title" />
     <textarea placeholder="Description" [(ngModel)]="newTask.description"></textarea>
+ 
+    <div class="modal-field">
+      <label style="color: white; font-size: 12px; display: block; margin-bottom: 5px;">
+        Deadline Date:
+      </label>
+      <input type="date" [(ngModel)]="newTask.deadline" />
+    </div>
 
     <select [(ngModel)]="newTask.priority">
       <option>High</option>
