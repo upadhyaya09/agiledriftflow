@@ -21,6 +21,12 @@ export class BoardComponent {
 
   tasks: any[] = [];
 
+  showModal = false;
+  isEditMode = false;
+  editTaskRef: any = null;
+  currentColumnStatus = 'todo'; // Tracks which column we are adding to
+
+
   //  DYNAMIC COLUMNS ARRAY
   columns = [
     { id: 'todoList', title: 'To Do', status: 'todo' , canAddTask: true },
@@ -28,11 +34,6 @@ export class BoardComponent {
     { id: 'doneList', title: 'Done', status: 'done' , canAddTask: false },
     { id: 'deliveredList', title: 'Delivered', status: 'delivered' , canAddTask: false }
   ];
-
-  showModal = false;
-  isEditMode = false;
-  editTaskRef: any = null;
-  currentColumnStatus = 'todo'; // Tracks which column we are adding to
 
   newTask = {
     title: '',
@@ -42,6 +43,31 @@ export class BoardComponent {
     createdAt: new Date(),
     deadline: '' // Will hold the user input date
   };
+
+  ngOnInit() {
+    this.loadFromLocalStorage();
+  }
+
+  // --- LOCAL STORAGE LOGIC ---
+  saveToLocalStorage() {
+    const data = {
+       tasks: this.tasks,
+        columns: this.columns 
+      };
+    localStorage.setItem('agileDriftData', JSON.stringify(data));
+  }
+
+  loadFromLocalStorage() {
+    const savedData = localStorage.getItem('agileDriftData');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      this.tasks = parsed.tasks || [];
+      this.columns = parsed.columns || this.columns;
+      // Convert date strings back to objects
+      this.tasks.forEach(t => t.createdAt = new Date(t.createdAt));
+      this.sortTasks();
+    }
+  }
 
   //  COLUMN MANAGEMENT
   addColumn() {
@@ -54,6 +80,7 @@ export class BoardComponent {
       status: statusValue,
       canAddTask: false // New columns won't have the Add Task button
        });
+       this.saveToLocalStorage();
     }
   }
 
@@ -65,6 +92,7 @@ export class BoardComponent {
   
     if (confirm(`Are you sure you want to delete the "${this.columns[index].title}" column?`)) {
       this.columns.splice(index, 1);
+      this.saveToLocalStorage();
     }
  }
 
@@ -142,6 +170,7 @@ export class BoardComponent {
     }
 
     this.sortTasks();
+    this.saveToLocalStorage();
     this.closeModal();
   }
 
@@ -159,6 +188,7 @@ export class BoardComponent {
     const task = event.previousContainer.data[event.previousIndex];
     if (task) {
         task.status = newStatus;
+        this.saveToLocalStorage();
     }
     this.sortTasks();
   }
