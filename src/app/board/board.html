@@ -15,7 +15,6 @@
     <option value="Low">Low Priority</option>
   </select>
 
-  <button class="add-col-header-btn" (click)="addColumn()">+ Add Column</button>
 </div>
 
 <div class="board" cdkDropListGroup>
@@ -27,7 +26,7 @@
         {{ col.title }}
         <span class="task-count">({{ filterTasks(col.status).length }})</span>
       </h3>
-      <button class="remove-col-btn" (click)="removeColumn(i)" *ngIf="col.status !== 'todo'">×</button>
+      <button class="remove-col-btn" (click)="triggerDeleteCol(i)" *ngIf="col.status !== 'todo'">🗑</button>
     </div>
 
     <div class="task-container"
@@ -78,6 +77,11 @@
     </div>
   </div>
 
+  <div class="add-column-center-wrapper">
+    <button class="inline-add-col-btn" (click)="openColModal()">
+      <span>+</span> Add Column
+    </button>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -106,6 +110,28 @@
       <button class="save" (click)="saveTask()">
         {{ isEditMode ? 'Update' : 'Add' }}
       </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showColModal">
+  <div class="modal centered-modal">
+    <h3>Add New Column</h3>
+    <input type="text" placeholder="Column Name..." [(ngModel)]="newColumnName" />
+    <div class="modal-actions">
+      <button class="cancel" (click)="showColModal = false">Cancel</button>
+      <button class="save" (click)="confirmAddColumn()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showDeleteColModal">
+  <div class="modal centered-modal">
+    <h3 style="color: #ff4d4d;">Confirm Deletion</h3>
+    <p style="color: white; margin-bottom: 20px;">Are you sure you want to delete this column? All tasks inside will be lost.</p>
+    <div class="modal-actions">
+      <button class="cancel" (click)="closeDeleteModal()">Cancel</button>
+      <button class="save" style="background: #dc2626;" (click)="confirmDeleteColumn()">Delete</button>
     </div>
   </div>
 </div>

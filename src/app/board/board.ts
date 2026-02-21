@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -14,7 +14,7 @@ imports: [
   templateUrl: './board.html',
   styleUrls: ['./board.css']
 })
-export class BoardComponent {
+export class BoardComponent implements OnInit{
 
   searchText = '';
   selectedPriority: string = 'All'; // New variable for the filter
@@ -25,14 +25,18 @@ export class BoardComponent {
   isEditMode = false;
   editTaskRef: any = null;
   currentColumnStatus = 'todo'; // Tracks which column we are adding to
-
+ 
+  // --- NEW MODAL CONTROLS ---
+  showColModal = false;
+  showDeleteColModal = false;
+  newColumnName = '';
+  colToDeleteIndex: number | null = null;
 
   //  DYNAMIC COLUMNS ARRAY
   columns = [
     { id: 'todoList', title: 'To Do', status: 'todo' , canAddTask: true },
     { id: 'progressList', title: 'In Progress', status: 'progress' , canAddTask: false },
-    { id: 'doneList', title: 'Done', status: 'done' , canAddTask: false },
-    { id: 'deliveredList', title: 'Delivered', status: 'delivered' , canAddTask: false }
+    { id: 'doneList', title: 'Done', status: 'done' , canAddTask: false }
   ];
 
   newTask = {
@@ -69,32 +73,46 @@ export class BoardComponent {
     }
   }
 
-  //  COLUMN MANAGEMENT
-  addColumn() {
-    const columnName = prompt('Enter new column name:');
-    if (columnName && columnName.trim()) {
-      const statusValue = columnName.toLowerCase().replace(/\s/g, '-');
+  // --- UPDATED COLUMN MANAGEMENT (CUSTOM MODALS) ---
+  openColModal() {
+    this.newColumnName = '';
+    this.showColModal = true;
+  }
+
+  confirmAddColumn() {
+    if (this.newColumnName.trim()) {
+      const statusValue = this.newColumnName.toLowerCase().replace(/\s/g, '-');
       this.columns.push({
         id: `${statusValue}List`,
-      title: columnName,
-      status: statusValue,
-      canAddTask: false // New columns won't have the Add Task button
-       });
-       this.saveToLocalStorage();
+        title: this.newColumnName,
+        status: statusValue,
+        canAddTask: false
+      });
+      this.saveToLocalStorage();
+      this.showColModal = false;
     }
   }
 
-  removeColumn(index: number) {
-    if (this.columns[index].status === 'todo') {
-      alert("You cannot remove the To Do column.");
+  triggerDeleteCol(index: number) {
+    if (this.columns[index].status === 'todo')
       return;
-    }
-  
-    if (confirm(`Are you sure you want to delete the "${this.columns[index].title}" column?`)) {
-      this.columns.splice(index, 1);
+    
+    this.colToDeleteIndex = index;
+    this.showDeleteColModal = true;
+  }
+
+  confirmDeleteColumn() {
+    if (this.colToDeleteIndex !== null) {
+      this.columns.splice(this.colToDeleteIndex, 1);
       this.saveToLocalStorage();
+      this.closeDeleteModal();
     }
- }
+  }
+
+  closeDeleteModal() {
+    this.showDeleteColModal = false;
+    this.colToDeleteIndex = null;
+  }
 
    getEmptyStateIcon(status: string): string {
     switch (status) {
@@ -111,8 +129,7 @@ export class BoardComponent {
     if (!deadline) return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Normalize to start of day for accurate comparison
-    const dueDate = new Date(deadline);
-    return dueDate <= today;
+    return new Date(deadline) <= today;
   }
 
   //  UPDATED FILTER (Still used by the HTML loop)
@@ -176,6 +193,7 @@ export class BoardComponent {
 
   deleteTask(task: any) {
     this.tasks = this.tasks.filter(t => t !== task);
+    this.saveToLocalStorage();
   }
 
   closeModal() {
