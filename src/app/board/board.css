@@ -231,6 +231,47 @@ html, body {
 .done { border-top: 6px solid #22c55e; }
 .delivered { border-top: 6px solid #16a34a; }
 
+/* TOAST NOTIFICATION STYLES */
+.toast {
+  position: fixed;
+  top: 30px; 
+  right: 30px; /* Start off-screen to the right */
+  background: #3b82f6; 
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px; /* Square-ish modern look */
+  font-weight: bold;
+  box-shadow: -5px 5px 15px rgba(0,0,0,0.3);
+  transition: right 0.4s ease-in-out;
+  z-index: 9999; /* Ensure it is above modals */
+  min-width: 250px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.toast.error {
+  background: #dc2626; /* Red for deletion */
+}
+
+.toast.info {
+  background: #0ea5e9; /* Light blue for updates */
+}
+
+/* Modal specific button style */
+.delete-btn {
+  background-color: #dc2626 !important;
+}
+
 /* ================= EMPTY STATE ================= */
 .empty-state {
   display: flex;

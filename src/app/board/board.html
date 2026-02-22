@@ -64,7 +64,7 @@
 
           <div class="actions">
             <button (click)="openEditModal(task)">✏️</button>
-            <button (click)="deleteTask(task)">🗑</button>
+            <button (click)="triggerDeleteTask(task)">🗑</button>
           </div>
         </div>
       </div>
@@ -82,6 +82,13 @@
       <span>+</span> Add Column
     </button>
   </div>
+</div>
+
+<div class="toast" 
+     [class.show]="notification.show" 
+     [class.error]="notification.type === 'error'"
+     [class.info]="notification.type === 'info'">
+  {{ notification.message }}
 </div>
 
 <!-- MODAL -->
@@ -132,6 +139,19 @@
     <div class="modal-actions">
       <button class="cancel" (click)="closeDeleteModal()">Cancel</button>
       <button class="save" style="background: #dc2626;" (click)="confirmDeleteColumn()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showDeleteTaskModal">
+  <div class="modal centered-modal">
+    <h3 style="color: #ff4d4d;">Delete Task?</h3>
+    <p style="color: white;">
+      Are you sure you want to delete "<strong>{{ taskToDelete?.title }}</strong>"?
+    </p>
+    <div class="modal-actions">
+      <button class="cancel" (click)="showDeleteTaskModal = false">Cancel</button>
+      <button class="save delete-btn" (click)="confirmDeleteTask()">Delete</button>
     </div>
   </div>
 </div>

@@ -26,6 +26,12 @@ export class BoardComponent implements OnInit{
   editTaskRef: any = null;
   currentColumnStatus = 'todo'; // Tracks which column we are adding to
  
+  // Notification and Confirmation states
+  notification = { message: '', show: false, type: 'success' };
+  showDeleteTaskModal = false;
+  taskToDelete: any = null;
+  private toastTimer: any;
+
   // --- NEW MODAL CONTROLS ---
   showColModal = false;
   showDeleteColModal = false;
@@ -89,6 +95,7 @@ export class BoardComponent implements OnInit{
         canAddTask: false
       });
       this.saveToLocalStorage();
+      this.showToast(`Column "${this.newColumnName}" created!`);
       this.showColModal = false;
     }
   }
@@ -103,8 +110,10 @@ export class BoardComponent implements OnInit{
 
   confirmDeleteColumn() {
     if (this.colToDeleteIndex !== null) {
+      const colName = this.columns[this.colToDeleteIndex].title;
       this.columns.splice(this.colToDeleteIndex, 1);
       this.saveToLocalStorage();
+      this.showToast(`Deleted column: ${colName}`, 'error');
       this.closeDeleteModal();
     }
   }
@@ -154,6 +163,19 @@ export class BoardComponent implements OnInit{
     return this.columns.map(col => col.id);
   }
 
+  // --- NOTIFICATION SYSTEM ---
+  showToast(msg: string, type: 'success' | 'info' | 'error' = 'success') {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+
+    // Set the notification
+    this.notification = { message: msg, show: true, type };
+
+    this.toastTimer = setTimeout(() => {
+      // We update the object reference to trigger Angular's UI refresh
+      this.notification = { ...this.notification, show: false };
+    }, 2000);
+  }
+
   // ---------- MODAL ----------
   openAddModal(status: string = 'todo') {
     this.isEditMode = false;
@@ -176,14 +198,17 @@ export class BoardComponent implements OnInit{
     this.showModal = true;
   }
 
+
   saveTask() {
     if (!this.newTask.title.trim()) return;
-
-    if (this.isEditMode && this.editTaskRef) {
+    
+    const isEditing = this.isEditMode;
+    if (isEditing && this.editTaskRef) {
       Object.assign(this.editTaskRef, this.newTask);
+      this.showToast("Task updated successfully!", 'info');
     } else {
-      const taskToAdd = { ...this.newTask, createdAt: new Date() };
-      this.tasks.push(taskToAdd);
+      this.tasks.push({ ...this.newTask, createdAt: new Date() });
+      this.showToast("New task added!");
     }
 
     this.sortTasks();
@@ -191,9 +216,21 @@ export class BoardComponent implements OnInit{
     this.closeModal();
   }
 
-  deleteTask(task: any) {
-    this.tasks = this.tasks.filter(t => t !== task);
-    this.saveToLocalStorage();
+  // Task Delete Confirmation logic
+  triggerDeleteTask(task: any) {
+    this.taskToDelete = task;
+    this.showDeleteTaskModal = true;
+  }
+
+  confirmDeleteTask() {
+    if (this.taskToDelete) {
+      this.tasks = this.tasks.filter(t => t !== this.taskToDelete);
+      this.sortTasks(); // ✅ Ensure list remains ordered after deletion
+      this.saveToLocalStorage();
+      this.showToast("Task deleted", 'error');
+    }
+    this.showDeleteTaskModal = false;
+    this.taskToDelete = null;
   }
 
   closeModal() {
