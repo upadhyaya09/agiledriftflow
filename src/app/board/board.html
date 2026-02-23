@@ -88,7 +88,8 @@
      [class.show]="notification.show" 
      [class.error]="notification.type === 'error'"
      [class.info]="notification.type === 'info'">
-  {{ notification.message }}
+  <span>{{ notification.message }}</span>
+  <button class="toast-close" (click)="notification.show = false">&times;</button>
 </div>
 
 <!-- MODAL -->

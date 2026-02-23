@@ -165,14 +165,18 @@ export class BoardComponent implements OnInit{
 
   // --- NOTIFICATION SYSTEM ---
   showToast(msg: string, type: 'success' | 'info' | 'error' = 'success') {
-    if (this.toastTimer) clearTimeout(this.toastTimer);
+    if (this.toastTimer) {
+       clearTimeout(this.toastTimer);
+    }
 
     // Set the notification
     this.notification = { message: msg, show: true, type };
 
     this.toastTimer = setTimeout(() => {
       // We update the object reference to trigger Angular's UI refresh
-      this.notification = { ...this.notification, show: false };
+      if (this.notification.show) {
+      this.notification.show = false;
+    }
     }, 2000);
   }
 
