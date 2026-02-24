@@ -109,18 +109,26 @@ export class BoardComponent implements OnInit{
   }
 
   confirmDeleteColumn() {
-    if (this.colToDeleteIndex !== null) {
-      const colName = this.columns[this.colToDeleteIndex].title;
-      this.columns.splice(this.colToDeleteIndex, 1);
-      this.saveToLocalStorage();
-      this.showToast(`Deleted column: ${colName}`, 'error');
-      this.closeDeleteModal();
+     if (this.colToDeleteIndex !== null) {
+       // 1. Capture the name first
+       const colName = this.columns[this.colToDeleteIndex].title;
+    
+       // 2. Delete the column
+       this.columns.splice(this.colToDeleteIndex, 1);
+       this.saveToLocalStorage();
+    
+       // 3. Show the dynamic toast with the emoji
+       this.showToast(`Column "${colName}" Deleted`, 'error');
+    
+       this.closeDeleteModal();
     }
   }
 
   closeDeleteModal() {
     this.showDeleteColModal = false;
+    this.showDeleteTaskModal = false; // Reset both here
     this.colToDeleteIndex = null;
+    this.taskToDelete = null;
   }
 
    getEmptyStateIcon(status: string): string {
@@ -231,7 +239,7 @@ export class BoardComponent implements OnInit{
       this.tasks = this.tasks.filter(t => t !== this.taskToDelete);
       this.sortTasks(); // ✅ Ensure list remains ordered after deletion
       this.saveToLocalStorage();
-      this.showToast("Task deleted", 'error');
+      this.showToast("Task  deleted", 'error');
     }
     this.showDeleteTaskModal = false;
     this.taskToDelete = null;

@@ -289,9 +289,16 @@ html, body {
   background: #0ea5e9; /* Light blue for updates */
 }
 
-/* Modal specific button style */
-.delete-btn {
-  background-color: #dc2626 !important;
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between emoji and text */
+}
+
+/* Ensure the toast can handle long column names */
+.toast span {
+  word-break: break-word;
+  max-width: 300px;
 }
 
 /* ================= EMPTY STATE ================= */
@@ -513,6 +520,107 @@ html, body {
   background: rgba(255, 255, 255, 0.2);
   color: white;
 }
+
+/* MODERN CONFIRMATION MODAL */
+.confirm-modal {
+  background: rgb(248, 155, 155);
+  padding: 40px 30px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  animation: modalScale 0.3s ease-out;
+}
+
+@keyframes modalScale {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.close-icon {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+}
+
+/* Illustration Styling */
+.confirm-illustration {
+  margin-bottom: 25px;
+}
+
+.trash-circle {
+  width: 80px;
+  height: 80px;
+  background: #fff5f5;
+  color: #ff4d4d;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+/* Typography */
+.confirm-title {
+  color: #333;
+  font-size: 22px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.confirm-subtitle {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+.confirm-subtitle strong {
+  color: #333; /* Darker color to make the name pop */
+  word-break: break-word; /* Prevents long titles from breaking the modal */
+  display: inline-block;
+  margin: 0 4px;
+}
+
+/* Modern Buttons */
+.confirm-actions {
+  display: flex;
+  flex-direction: column; /* Stacked look like your image or side-by-side */
+  gap: 12px;
+}
+
+.btn-delete {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover { background: #e63939; }
+
+.btn-cancel {
+  background: #fff0f0;
+  color: #ff4d4d;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-cancel:hover { background: #ffe5e5; }
 
 /* ================= CDK DRAG FIX ================= */
 .cdk-drag-placeholder {

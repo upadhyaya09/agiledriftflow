@@ -88,7 +88,11 @@
      [class.show]="notification.show" 
      [class.error]="notification.type === 'error'"
      [class.info]="notification.type === 'info'">
-  <span>{{ notification.message }}</span>
+  
+  <div class="toast-content">
+    <span>✅ {{ notification.message }}</span>
+  </div>
+
   <button class="toast-close" (click)="notification.show = false">&times;</button>
 </div>
 
@@ -133,26 +137,36 @@
   </div>
 </div>
 
-<div class="modal-backdrop" *ngIf="showDeleteColModal">
-  <div class="modal centered-modal">
-    <h3 style="color: #ff4d4d;">Confirm Deletion</h3>
-    <p style="color: white; margin-bottom: 20px;">Are you sure you want to delete this column? All tasks inside will be lost.</p>
-    <div class="modal-actions">
-      <button class="cancel" (click)="closeDeleteModal()">Cancel</button>
-      <button class="save" style="background: #dc2626;" (click)="confirmDeleteColumn()">Delete</button>
+<div class="modal-backdrop" *ngIf="showDeleteTaskModal || showDeleteColModal">
+  <div class="confirm-modal">
+    <button class="close-icon" (click)="closeDeleteModal(); showDeleteTaskModal = false">&times;</button>
+    
+    <div class="confirm-illustration">
+      <div class="trash-circle">🗑️</div>
     </div>
-  </div>
-</div>
 
-<div class="modal-backdrop" *ngIf="showDeleteTaskModal">
-  <div class="modal centered-modal">
-    <h3 style="color: #ff4d4d;">Delete Task?</h3>
-    <p style="color: white;">
-      Are you sure you want to delete "<strong>{{ taskToDelete?.title }}</strong>"?
-    </p>
-    <div class="modal-actions">
-      <button class="cancel" (click)="showDeleteTaskModal = false">Cancel</button>
-      <button class="save delete-btn" (click)="confirmDeleteTask()">Delete</button>
+    <div class="confirm-content">
+      <h3 class="confirm-title">Are you sure?</h3>
+      <p class="confirm-subtitle">
+        <span *ngIf="showDeleteTaskModal">
+           You are about to delete the task <strong>"{{ taskToDelete?.title }}"</strong>.
+        </span>
+    
+        <span *ngIf="showDeleteColModal">
+           You are about to delete the <strong>"{{ columns[colToDeleteIndex!]?.title }}"</strong> column and all its tasks.
+        </span>
+        <br>
+           This action cannot be undone.
+       </p>
+    </div>
+
+    <div class="confirm-actions">
+      <button class="btn-delete" (click)="showDeleteTaskModal ? confirmDeleteTask() : confirmDeleteColumn()">
+        Delete
+      </button>
+      <button class="btn-cancel" (click)="closeDeleteModal(); showDeleteTaskModal = false">
+        Cancel
+      </button>
     </div>
   </div>
 </div>
