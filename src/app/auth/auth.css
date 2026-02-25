@@ -1,0 +1,80 @@
+/* This container wraps everything coming through the router */
+.auth-container {
+  position: fixed; /* Fixes it to the screen */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Makes sure it stays above the laptop background */
+  background: rgba(0, 0, 0, 0.4); /* Slight dim to make the card pop */
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.85); /* Semi-transparent */
+  backdrop-filter: blur(10px);          /* Blurs the background behind the card */
+  padding: 40px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Ensure text is visible */
+h2, p, label {
+  color: #333 !important;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; /* Crucial for padding */
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px !important; /* Make space for the icon */
+  height: 45px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  cursor: pointer;
+  user-select: none; /* Prevents highlighting the icon text */
+  font-size: 1.2rem;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.eye-icon:active {
+  transform: scale(0.9); /* Small click effect */
+}

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Router } from '@angular/router'; //  Import Router
 
 imports: [
   DragDropModule
@@ -53,6 +54,8 @@ export class BoardComponent implements OnInit{
     createdAt: new Date(),
     deadline: '' // Will hold the user input date
   };
+ 
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.loadFromLocalStorage();
@@ -281,4 +284,10 @@ export class BoardComponent implements OnInit{
      });
   }
 
+
+  logout() {
+    localStorage.removeItem('currentUser'); // Clear the session
+    this.router.navigate(['/']);            // Go back to login
+  }
+  
 }

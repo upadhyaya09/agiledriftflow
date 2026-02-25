@@ -40,14 +40,42 @@ html, body {
   background-clip: content-box;
 }
 
-/* ================= TITLE ================= */
-.board-title {
-  text-align: center;
-  font-size: 36px;
-  margin: 15px 0;
-  color: #1908b6; /* White looks better on dark backgrounds */
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+.board-top-bar {
+  position: relative; /* Container for absolute positioning */
+  padding: 20px 0;
+  text-align: center; /* Centers the title perfectly */
 }
+
+.main-title {
+  margin: 0;
+  font-size: 2.5rem;
+  color: rgb(101, 52, 236);
+  font-weight: bold;
+  letter-spacing: 2px;
+  /* Add a text shadow if it's hard to read against the laptop background */
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
+}
+
+.logout-btn {
+  position: absolute; /* Takes button out of the flow */
+  top: 20px;
+  right: 20px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #ff6b81;
+  transform: scale(1.05);
+}
+
 
 .filter-container {
   display: flex;

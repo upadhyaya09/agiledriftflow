@@ -1,0 +1,43 @@
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>{{ isLoginMode ? 'Login to AgileDrift' : 'Create Account' }}</h2>
+    
+    <form #authForm="ngForm" (ngSubmit)="onSubmit()">
+      
+      <div *ngIf="!isLoginMode">
+        <input type="text" name="username" placeholder="Username" [(ngModel)]="authData.username" required #uname="ngModel">
+        <input type="email" name="email" placeholder="Email Address" [(ngModel)]="authData.email" required #email="ngModel">
+        <input type="tel" name="phone" placeholder="Phone Number" [(ngModel)]="authData.phone" required #phone="ngModel">
+      </div>
+
+      <div *ngIf="isLoginMode">
+        <input type="text" name="loginId" placeholder="Email, Username, or Phone" [(ngModel)]="authData.loginIdentifier" required>
+      </div>
+
+      <div class="password-wrapper">
+        <input 
+          [type]="passwordVisible ? 'text' : 'password'" 
+          name="password" 
+          placeholder="Password" 
+          [(ngModel)]="authData.password" 
+          required>
+        
+        <span class="eye-icon" (click)="togglePassword()">
+          {{ passwordVisible ? '👁️' : '🙈' }}
+        </span>
+      </div>
+
+      <button type="submit" [disabled]="!authForm.valid" class="btn-primary">
+        {{ isLoginMode ? 'Login' : 'Sign Up' }}
+      </button>
+    </form>
+
+    <p class="toggle-text" style="margin-top: 20px; color: #666;">
+      {{ isLoginMode ? "New here?" : "Already have an account?" }}
+      <span (click)="onSwitchMode()" style="color: #007bff; cursor: pointer; font-weight: bold;">
+        {{ isLoginMode ? 'Register now' : 'Login instead' }}
+      </span>
+    </p>
+  </div>
+</div>

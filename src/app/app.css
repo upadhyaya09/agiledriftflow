@@ -1,3 +1,14 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* This makes sure the router-outlet container fills the screen */
+app-root {
+  display: block;
+  height: 100vh;
+}
+
 .container {
   text-align: center;
   margin-top: 60px;
