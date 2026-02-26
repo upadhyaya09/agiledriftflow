@@ -17,6 +17,8 @@ imports: [
 })
 export class BoardComponent implements OnInit{
 
+  currentUser: any;
+
   searchText = '';
   selectedPriority: string = 'All'; // New variable for the filter
 
@@ -58,6 +60,10 @@ export class BoardComponent implements OnInit{
   constructor(private router: Router) {}
 
   ngOnInit() {
+    const data = localStorage.getItem('currentUser');
+    if (data) {
+      this.currentUser = JSON.parse(data);
+    }
     this.loadFromLocalStorage();
   }
 

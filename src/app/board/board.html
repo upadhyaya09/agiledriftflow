@@ -1,6 +1,24 @@
-<div class="board-top-bar">
-  <h1 class="main-title">AgileDrift</h1>
-  <button class="logout-btn" (click)="logout()">Logout</button>
+<div class="board-container">
+  <header class="main-header">
+    <div class="profile-section" *ngIf="currentUser">
+      <div class="profile-pill">
+        <div class="avatar-circle">
+          {{ currentUser.username?.charAt(0).toUpperCase() }}
+        </div>
+        <div class="user-meta">
+          <span class="user-id">{{ currentUser.username }}</span>
+          <span class="user-mail">{{ currentUser.email }}</span>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="app-title">AgileDrift</h1>
+
+    <div class="action-section">
+      <button class="logout-button" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
 </div>
 
 <div class="filter-container">

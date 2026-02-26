@@ -40,23 +40,85 @@ html, body {
   background-clip: content-box;
 }
 
-.board-top-bar {
-  position: relative; /* Container for absolute positioning */
-  padding: 20px 0;
-  text-align: center; /* Centers the title perfectly */
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: transparent; /* Removes any solid background color */
+  border-bottom: none !important; /* Forces the removal of the line */
+  position: relative;
+  z-index: 10;
 }
 
-.main-title {
+/* These three sections ensure perfect centering */
+.profile-section, .action-section {
+  flex: 1; 
+  display: flex;
+  align-items: center;
+}
+
+.action-section {
+  justify-content: flex-end; /* Pushes logout to the far right */
+}
+
+.profile-pill {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9); /* Glass effect */
+  padding: 8px 15px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.avatar-circle {
+  width: 35px;
+  height: 35px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-id {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.user-mail {
+  font-size: 0.7rem;
+  color: #777;
+}
+
+.app-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   margin: 0;
   font-size: 2.5rem;
-  color: rgb(101, 52, 236);
-  font-weight: bold;
-  letter-spacing: 2px;
-  /* Add a text shadow if it's hard to read against the laptop background */
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
+  font-weight: 800;
+  color: #2c29f3; /* White text looks great on your blurred background */
+  text-shadow: 2px 2px 10px rgba(93, 93, 255, 0.5); /* Soft purple glow */
+  letter-spacing: 1px;
 }
 
-.logout-btn {
+.logout-button {
   position: absolute; /* Takes button out of the flow */
   top: 20px;
   right: 20px;

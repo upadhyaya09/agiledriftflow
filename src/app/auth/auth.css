@@ -28,14 +28,6 @@ h2, p, label {
   color: #333 !important;
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box; /* Crucial for padding */
-}
 
 .btn-primary {
   background: #007bff;
@@ -48,33 +40,63 @@ input {
   margin-top: 10px;
 }
 
-.password-wrapper {
+.input-group {
   position: relative;
-  display: flex;
-  align-items: center;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.password-wrapper input {
-  width: 100%;
-  padding-right: 45px !important; /* Make space for the icon */
-  height: 45px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+/* Style for the icons (👤, ✉️, 📞, 🔒) */
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  z-index: 2;
+  pointer-events: none; /* Icon won't block clicks */
 }
 
-.eye-icon {
+.input-group input {
+  width: 100%;
+  height: 50px;
+  padding: 0 45px 0 45px !important; /* Left padding for icon, Right for eye */
+  border: 1.5px solid #e1e1e1;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Makes sure padding doesn't break width */
+}
+
+.input-group input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.1);
+}
+
+/* The Eye Icon Toggle */
+.eye-icon-toggle {
   position: absolute;
   right: 15px;
   top: 50%;
-  cursor: pointer;
-  user-select: none; /* Prevents highlighting the icon text */
-  font-size: 1.2rem;
   transform: translateY(-50%);
-  z-index: 10;
+  cursor: pointer;
+  z-index: 2;
+  user-select: none;
 }
 
-.eye-icon:active {
-  transform: scale(0.9); /* Small click effect */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 45px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 10px;
 }
