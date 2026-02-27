@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
@@ -29,7 +29,16 @@ export class AuthComponent {
     this.isLoginMode = !this.isLoginMode;
   }
 
-  onSubmit() {
+  onSubmit(form: NgForm) {
+      // 1. BLOCK SUBMISSION IF HTML VALIDATION FAILS
+      if (form.invalid) {
+        // This  line marks every field as 'touched' 
+        // This forces all your validation messages to pop up instantly!
+        form.control.markAllAsTouched();
+        alert("Please fill in all mandatory fields correctly.");
+        return; 
+      }
+
       // Get existing users from storage or start with an empty list
       const users = JSON.parse(localStorage.getItem('users') || '[]');
 
@@ -49,6 +58,7 @@ export class AuthComponent {
          localStorage.setItem('users', JSON.stringify(users));
          alert("Registration Successful! Please Login.");
          this.isLoginMode = true;
+         form.resetForm();
         } else {
          // LOGIN LOGIC
          const user = users.find((u: any) => 

@@ -6,37 +6,52 @@
         <span *ngIf="!isLoginMode">🚀 Create Account</span>
     </h2>
 
-    <form #authForm="ngForm" (ngSubmit)="onSubmit()">
+    <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
       
       <div *ngIf="!isLoginMode">
         <div class="input-group">
+           <div class="validation-msg" *ngIf="uname.invalid && (uname.touched || authForm.submitted)">Username is required</div>
            <span class="input-icon">👤</span>
-           <input type="text" name="username" placeholder="Username" [(ngModel)]="authData.username" required>
+           <input type="text" name="username" placeholder="Username" [(ngModel)]="authData.username" required #uname="ngModel">
         </div>
     
         <div class="input-group">
+           <div class="validation-msg" *ngIf="emailVar.invalid && (emailVar.touched || authForm.submitted)">Enter a valid email (e.g., name@example.com)</div>
            <span class="input-icon">✉️</span>
-           <input type="email" name="email" placeholder="Email Address" [(ngModel)]="authData.email" required>
+           <input type="email" name="email" placeholder="Email Address" [(ngModel)]="authData.email" required email #emailVar="ngModel">
         </div>
 
         <div class="input-group">
+           <div class="validation-msg" *ngIf="phoneVar.invalid && (phoneVar.touched || authForm.submitted)">Invalid phone number</div>
            <span class="input-icon">📞</span>
-           <input type="tel" name="phone" placeholder="Phone Number" [(ngModel)]="authData.phone" required>
+           <input type="tel" name="phone" placeholder="Phone Number" [(ngModel)]="authData.phone" required #phoneVar="ngModel">
         </div>
       </div>
 
       <div *ngIf="isLoginMode">
         <div class="input-group">
+           <div class="validation-msg" *ngIf="loginId.invalid && loginId.touched">This field is required</div>
            <span class="input-icon">👤</span>
-           <input type="text" name="loginId" placeholder="Email, Username, or Phone" [(ngModel)]="authData.loginIdentifier" required>
+           <input type="text" name="loginId" placeholder="Email, Username, or Phone" [(ngModel)]="authData.loginIdentifier" required #loginId="ngModel">
         </div>
       </div>
 
       <div class="input-group">
+        <div class="validation-msg" *ngIf="pwd.invalid && (pwd.touched || authForm.submitted)">
+          <span *ngIf="pwd.errors?.['required']">Password required</span>
+          <span *ngIf="pwd.errors?.['minlength']">Must be at least 8 characters</span>
+        </div>
         <span class="input-icon">🔒</span>
-        <input [type]="passwordVisible ? 'text' : 'password'" name="password" placeholder="Password" [(ngModel)]="authData.password" required>
+        <input 
+          [type]="passwordVisible ? 'text' : 'password'" 
+          name="password" 
+          placeholder="Password" 
+          [(ngModel)]="authData.password" 
+          required 
+          minlength="8" 
+          #pwd="ngModel">
         <span class="eye-icon-toggle" (click)="togglePassword()">
-           {{ passwordVisible ? '👁️' : '🙈' }}
+          {{ passwordVisible ? '👁️' : '🙈' }}
         </span>
       </div>
 
