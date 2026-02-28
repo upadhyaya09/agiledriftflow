@@ -129,7 +129,7 @@
       <label style="color: white; font-size: 12px; display: block; margin-bottom: 5px;">
         Deadline Date:
       </label>
-      <input type="date" [(ngModel)]="newTask.deadline" />
+      <input type="date" [(ngModel)]="newTask.deadline" [min]="minDate" required/>
     </div>
 
     <select [(ngModel)]="newTask.priority">

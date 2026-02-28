@@ -28,7 +28,8 @@ export class BoardComponent implements OnInit{
   isEditMode = false;
   editTaskRef: any = null;
   currentColumnStatus = 'todo'; // Tracks which column we are adding to
- 
+  minDate: string;
+
   // Notification and Confirmation states
   notification = { message: '', show: false, type: 'success' };
   showDeleteTaskModal = false;
@@ -57,7 +58,14 @@ export class BoardComponent implements OnInit{
     deadline: '' // Will hold the user input date
   };
  
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    // New Date logic added here
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
+    
+    console.log("Min Date Set to:", this.minDate); // Helpful for debugging
+  }
+
 
   ngOnInit() {
     const data = localStorage.getItem('currentUser');
