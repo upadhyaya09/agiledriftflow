@@ -10,18 +10,21 @@
       
       <div *ngIf="!isLoginMode">
         <div class="input-group">
+           <label class="field-label">Username <span class="req">*</span></label>
            <div class="validation-msg" *ngIf="uname.invalid && (uname.touched || authForm.submitted)">Username is required</div>
            <span class="input-icon">👤</span>
            <input type="text" name="username" placeholder="Username" [(ngModel)]="authData.username" required #uname="ngModel">
         </div>
     
         <div class="input-group">
+           <label class="field-label">Email Address <span class="req">*</span></label>
            <div class="validation-msg" *ngIf="emailVar.invalid && (emailVar.touched || authForm.submitted)">Enter a valid email (e.g., name@example.com)</div>
            <span class="input-icon">✉️</span>
            <input type="email" name="email" placeholder="Email Address" [(ngModel)]="authData.email" required email #emailVar="ngModel">
         </div>
 
         <div class="input-group">
+           <label class="field-label">Phone Number <span class="req">*</span></label>
            <div class="validation-msg" *ngIf="phoneVar.invalid && (phoneVar.touched || authForm.submitted)">Invalid phone number</div>
            <span class="input-icon">📞</span>
            <input type="tel" name="phone" placeholder="Phone Number" [(ngModel)]="authData.phone" required #phoneVar="ngModel">
@@ -30,6 +33,7 @@
 
       <div *ngIf="isLoginMode">
         <div class="input-group">
+           <label class="field-label">Login Identifier <span class="req">*</span></label>
            <div class="validation-msg" *ngIf="loginId.invalid && loginId.touched">This field is required</div>
            <span class="input-icon">👤</span>
            <input type="text" name="loginId" placeholder="Email, Username, or Phone" [(ngModel)]="authData.loginIdentifier" required #loginId="ngModel">
@@ -37,6 +41,7 @@
       </div>
 
       <div class="input-group">
+        <label class="field-label">Password <span class="req">*</span></label>
         <div class="validation-msg" *ngIf="pwd.invalid && (pwd.touched || authForm.submitted)">
           <span *ngIf="pwd.errors?.['required']">Password required</span>
           <span *ngIf="pwd.errors?.['minlength']">Must be at least 8 characters</span>
