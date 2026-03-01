@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router'; //  Import Router
 
@@ -228,21 +228,34 @@ export class BoardComponent implements OnInit{
   }
 
 
-  saveTask() {
-    if (!this.newTask.title.trim()) return;
+  saveTask(form: NgForm) {
+    //  Check if the Angular form is valid (Title and Description are required)
+    if (form.valid) {
+      const isEditing = this.isEditMode;
     
-    const isEditing = this.isEditMode;
-    if (isEditing && this.editTaskRef) {
-      Object.assign(this.editTaskRef, this.newTask);
-      this.showToast("Task updated successfully!", 'info');
-    } else {
-      this.tasks.push({ ...this.newTask, createdAt: new Date() });
-      this.showToast("New task added!");
-    }
+      if (isEditing && this.editTaskRef) {
+        // Logic for editing existing task
+        Object.assign(this.editTaskRef, this.newTask);
+        this.showToast("Task updated successfully!", 'info');
+      } else {
+        // Logic for adding new task
+        this.tasks.push({ ...this.newTask, createdAt: new Date() });
+        this.showToast("New task added!");
+      }
 
-    this.sortTasks();
-    this.saveToLocalStorage();
-    this.closeModal();
+      this.sortTasks();
+      this.saveToLocalStorage();
+      this.closeModal();
+      form.resetForm(); // Clear the validation state for the next use
+    
+    } else {
+      // THIS IS THE KEY: If the form is invalid, force all errors to show
+      // Even if the user never clicked inside the inputs
+      form.control.markAllAsTouched();
+    
+      // Notify the user via your existing toast system
+      this.showToast("Please fill in the Title and Description!", 'error');
+    }
   }
 
   // Task Delete Confirmation logic
