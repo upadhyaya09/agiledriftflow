@@ -19,6 +19,10 @@ export class BoardComponent implements OnInit{
 
   currentUser: any;
   showAccountMenu = false;
+  showEditProfileModal = false; // Toggle for the Manage modal
+  
+  // Clone of current user to avoid direct binding during edits
+  editingUser = { username: '', email: '', phone: '' };
 
   searchText = '';
   selectedPriority: string = 'All'; // New variable for the filter
@@ -69,11 +73,43 @@ export class BoardComponent implements OnInit{
 
 
   ngOnInit() {
-    const data = localStorage.getItem('currentUser');
-    if (data) {
-      this.currentUser = JSON.parse(data);
+    const session = localStorage.getItem('currentUser');
+    if (session) {
+      this.currentUser = JSON.parse(session);
     }
     this.loadFromLocalStorage();
+  }
+
+  //  ADD ACCOUNT LOGIC
+  goToRegister() {
+    this.showAccountMenu = false;
+    // Redirects to auth page; since isLoginMode will be false, it shows Register
+    this.router.navigate(['/auth']); 
+  }
+
+  //  MANAGE PROFILE LOGIC
+  openManageProfile() {
+    this.editingUser = { ...this.currentUser }; // Create a shallow copy
+    this.showEditProfileModal = true;
+    this.showAccountMenu = false;
+  }
+
+  saveProfileUpdate() {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const index = users.findIndex((u: any) => u.email === this.currentUser.email);
+
+    if (index !== -1) {
+      // Update the user in the main storage
+      users[index] = { ...users[index], ...this.editingUser };
+      localStorage.setItem('users', JSON.stringify(users));
+      
+      // Update the current session
+      this.currentUser = users[index];
+      localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+      
+      this.showEditProfileModal = false;
+      alert("Profile updated successfully!");
+    }
   }
 
   // --- LOCAL STORAGE LOGIC ---

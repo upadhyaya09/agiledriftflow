@@ -29,10 +29,10 @@
         </div>
 
         <div class="account-actions">
-          <button class="action-btn add-acc">
+          <button class="action-btn add-acc" (click)="goToRegister()">
             <span>+</span> Add Account
           </button>
-          <button class="action-btn manage-acc">
+          <button class="action-btn manage-acc" (click)="openManageProfile()">
             <span>⚙️</span> Manage
           </button>
         </div>
@@ -231,6 +231,28 @@
       <button class="btn-cancel" (click)="closeDeleteModal(); showDeleteTaskModal = false">
         Cancel
       </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showEditProfileModal">
+  <div class="modal">
+    <h3>Edit Profile</h3>
+    <div class="modal-field">
+      <label>Username</label>
+      <input type="text" [(ngModel)]="editingUser.username" />
+    </div>
+    <div class="modal-field">
+      <label>Email (Read Only)</label>
+      <input type="email" [(ngModel)]="editingUser.email" disabled />
+    </div>
+    <div class="modal-field">
+      <label>Phone Number</label>
+      <input type="tel" [(ngModel)]="editingUser.phone" />
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" (click)="showEditProfileModal = false">Cancel</button>
+      <button class="save" (click)="saveProfileUpdate()">Save Changes</button>
     </div>
   </div>
 </div>

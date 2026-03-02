@@ -185,6 +185,20 @@ html, body {
   letter-spacing: 1px;
 }
 
+.modal-field label {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.modal-field input:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: #bbb;
+  cursor: not-allowed;
+}
+
 .logout-button {
   position: absolute; /* Takes button out of the flow */
   top: 20px;
