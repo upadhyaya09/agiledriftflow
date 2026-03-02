@@ -52,11 +52,78 @@ html, body {
 }
 
 /* These three sections ensure perfect centering */
-.profile-section, .action-section {
+.profile-section {
   flex: 1; 
   display: flex;
   align-items: center;
 }
+
+.accounts-card {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.accounts-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.account-item {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+}
+
+.account-item .name { font-weight: bold; margin: 0; font-size: 13px; color: #333; }
+.account-item .email-sub { font-size: 11px; margin: 0; color: #777; }
+
+.status-tag {
+  margin-left: auto;
+  font-size: 10px;
+  background: #e1f5fe;
+  color: #039be5;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.account-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  flex: 1;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: white;
+  border: 1px solid #ddd;
+  transition: 0.3s;
+}
+
+.action-btn:hover { background: #f0f0f0; }
 
 .action-section {
   justify-content: flex-end; /* Pushes logout to the far right */

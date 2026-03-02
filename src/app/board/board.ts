@@ -18,6 +18,7 @@ imports: [
 export class BoardComponent implements OnInit{
 
   currentUser: any;
+  showAccountMenu = false;
 
   searchText = '';
   selectedPriority: string = 'All'; // New variable for the filter

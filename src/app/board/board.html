@@ -1,13 +1,40 @@
 <div class="board-container">
   <header class="main-header">
     <div class="profile-section" *ngIf="currentUser">
-      <div class="profile-pill">
+      <div class="profile-pill" (click)="showAccountMenu = !showAccountMenu">
         <div class="avatar-circle">
           {{ currentUser.username?.charAt(0).toUpperCase() }}
         </div>
         <div class="user-meta">
           <span class="user-id">{{ currentUser.username }}</span>
           <span class="user-mail">{{ currentUser.email }}</span>
+        </div>
+      </div>
+
+      <div class="accounts-card" *ngIf="showAccountMenu">
+        <div class="accounts-header">
+          <span>👥 Accounts</span>
+          <button class="close-btn" (click)="showAccountMenu = false">×</button>
+        </div>
+      
+        <div class="account-item active">
+          <div class="avatar-circle small">
+             {{ currentUser.username?.charAt(0).toUpperCase() }}
+          </div>
+          <div class="account-info">
+            <p class="name">{{ currentUser.username }}</p>
+            <p class="email-sub">{{ currentUser.email }}</p>
+          </div>
+          <span class="status-tag">Active</span>
+        </div>
+
+        <div class="account-actions">
+          <button class="action-btn add-acc">
+            <span>+</span> Add Account
+          </button>
+          <button class="action-btn manage-acc">
+            <span>⚙️</span> Manage
+          </button>
         </div>
       </div>
     </div>
