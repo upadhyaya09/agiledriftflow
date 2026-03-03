@@ -3,10 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router'; //  Import Router
-
-imports: [
-  DragDropModule
-]
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-board',
@@ -63,7 +60,7 @@ export class BoardComponent implements OnInit{
     deadline: '' // Will hold the user input date
   };
  
-  constructor(private router: Router) {
+  constructor(private router: Router, private http: HttpClient) {
     // New Date logic added here
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
@@ -142,15 +139,20 @@ export class BoardComponent implements OnInit{
   confirmAddColumn() {
     if (this.newColumnName.trim()) {
       const statusValue = this.newColumnName.toLowerCase().replace(/\s/g, '-');
-      this.columns.push({
+      const newCol = {
         id: `${statusValue}List`,
         title: this.newColumnName,
         status: statusValue,
         canAddTask: false
+      };
+
+      // Mock API Call for Adding Column
+      this.http.post('/api/columns', newCol).subscribe(() => {
+        this.columns.push(newCol);
+        this.saveToLocalStorage();
+        this.showToast(`Column "${this.newColumnName}" create! `);
+        this.showColModal = false;
       });
-      this.saveToLocalStorage();
-      this.showToast(`Column "${this.newColumnName}" created!`);
-      this.showColModal = false;
     }
   }
 
@@ -163,18 +165,16 @@ export class BoardComponent implements OnInit{
   }
 
   confirmDeleteColumn() {
-     if (this.colToDeleteIndex !== null) {
-       // 1. Capture the name first
-       const colName = this.columns[this.colToDeleteIndex].title;
+    if (this.colToDeleteIndex !== null) {
+      const targetCol = this.columns[this.colToDeleteIndex];
     
-       // 2. Delete the column
-       this.columns.splice(this.colToDeleteIndex, 1);
-       this.saveToLocalStorage();
-    
-       // 3. Show the dynamic toast with the emoji
-       this.showToast(`Column "${colName}" Deleted`, 'error');
-    
-       this.closeDeleteModal();
+      // Mock API Call for Deleting Column
+      this.http.delete(`/api/columns/${targetCol.id}`).subscribe(() => {
+        this.columns.splice(this.colToDeleteIndex!, 1);
+        this.saveToLocalStorage();
+        this.showToast(`Column "${targetCol.title}" Deleted `, );
+        this.closeDeleteModal();
+      });
     }
   }
 
@@ -266,33 +266,43 @@ export class BoardComponent implements OnInit{
 
 
   saveTask(form: NgForm) {
-    //  Check if the Angular form is valid (Title and Description are required)
     if (form.valid) {
-      const isEditing = this.isEditMode;
-    
-      if (isEditing && this.editTaskRef) {
-        // Logic for editing existing task
-        Object.assign(this.editTaskRef, this.newTask);
-        this.showToast("Task updated successfully!", 'info');
-      } else {
-        // Logic for adding new task
-        this.tasks.push({ ...this.newTask, createdAt: new Date() });
-        this.showToast("New task added!");
-      }
+      // Decide URL: POST for new tasks, PUT for updates
+      const url = this.isEditMode ? '/api/tasks/update' : '/api/tasks/add';
 
-      this.sortTasks();
-      this.saveToLocalStorage();
-      this.closeModal();
-      form.resetForm(); // Clear the validation state for the next use
-    
+      // This triggers the Network tab entry
+      this.http.post(url, this.newTask).subscribe({
+        next: (resp) => {
+          console.log('Network Tab should show:', url);
+          if (this.isEditMode && this.editTaskRef) {
+            // Object.assign updates the reference in the original array
+            Object.assign(this.editTaskRef, this.newTask);
+            this.showToast("Task updated successfully!", 'info');
+          } else {
+            // Add new task with a unique ID for the delete logic to work
+            this.tasks.push({ 
+              ...this.newTask, 
+              id: Date.now(), 
+              createdAt: new Date() 
+            });
+            this.showToast("New task added!");
+          }
+
+          this.finalizeTaskSave();
+          form.resetForm();
+        },
+        error: () => this.showToast("Network Error", 'error')
+      });
     } else {
-      // THIS IS THE KEY: If the form is invalid, force all errors to show
-      // Even if the user never clicked inside the inputs
       form.control.markAllAsTouched();
-    
-      // Notify the user via your existing toast system
-      this.showToast("Please fill in the Title and Description!", 'error');
+      this.showToast("Please fill in all fields!", 'error');
     }
+  }
+
+  private finalizeTaskSave() {
+    this.sortTasks();
+    this.saveToLocalStorage();
+    this.closeModal(); // Ensure the modal actually closes
   }
 
   // Task Delete Confirmation logic
@@ -303,13 +313,19 @@ export class BoardComponent implements OnInit{
 
   confirmDeleteTask() {
     if (this.taskToDelete) {
-      this.tasks = this.tasks.filter(t => t !== this.taskToDelete);
-      this.sortTasks(); // ✅ Ensure list remains ordered after deletion
-      this.saveToLocalStorage();
-      this.showToast("Task  deleted", 'error');
+      // Mock API Call for Deleting Task
+      // Assuming task has a unique ID, otherwise we use the title for the mock URL
+      const taskId = this.taskToDelete.id || this.taskToDelete.title.replace(/\s/g, '');
+    
+      this.http.delete(`/api/tasks/${taskId}`).subscribe(() => {
+        this.tasks = this.tasks.filter(t => t !== this.taskToDelete);
+        this.sortTasks();
+        this.saveToLocalStorage();
+        this.showToast("Task Deleted .");
+        this.showDeleteTaskModal = false;
+        this.taskToDelete = null;
+      });
     }
-    this.showDeleteTaskModal = false;
-    this.taskToDelete = null;
   }
 
   closeModal() {

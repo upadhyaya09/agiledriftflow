@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-auth',
@@ -23,64 +24,73 @@ export class AuthComponent {
     loginIdentifier: '' // Used for Email/Username/Phone in login
   };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
   }
 
   onSubmit(form: NgForm) {
-      // 1. BLOCK SUBMISSION IF HTML VALIDATION FAILS
-      if (form.invalid) {
-        // This  line marks every field as 'touched' 
-        // This forces all your validation messages to pop up instantly!
-        form.control.markAllAsTouched();
-        alert("Please fill in all mandatory fields correctly.");
-        return; 
+    if (form.invalid) {
+      form.control.markAllAsTouched();
+      alert("Please fill in all mandatory fields correctly.");
+      return; 
+    }
+
+    // Determine the mock endpoint based on the mode
+    const endpoint = this.isLoginMode ? '/api/login' : '/api/register';
+
+    // 2. Wrap existing logic in an HTTP POST request
+    this.http.post(endpoint, this.authData).subscribe({
+      next: (response) => {
+        // This block executes after the Interceptor returns 200 OK
+        console.log('Mock Auth Response:', response);
+        this.handleAuthLogic(form);
+      },
+      error: (err) => {
+        alert("Server error during authentication.");
+      }
+    });
+  }
+
+  // Moved your original LocalStorage logic here to keep onSubmit clean
+  private handleAuthLogic(form: NgForm) {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    if (!this.isLoginMode) {
+      const isDuplicate = users.some((u: any) => 
+          u.email === this.authData.email || u.username === this.authData.username
+      );
+
+      if (isDuplicate) {
+          alert("Email or Username already exists!");
+          return;
       }
 
-      // Get existing users from storage or start with an empty list
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      users.push({ ...this.authData });
+      localStorage.setItem('users', JSON.stringify(users));
+      alert("Registration Successful! (200 OK) Please Login.");
+      this.isLoginMode = true;
+      form.resetForm();
+    } else {
+      const user = users.find((u: any) => 
+          (u.email === this.authData.loginIdentifier || 
+           u.username === this.authData.loginIdentifier || 
+           u.phone === this.authData.loginIdentifier) && 
+           u.password === this.authData.password
+      );
 
-      if (!this.isLoginMode) {
-         // REGISTER LOGIC
-         const isDuplicate = users.some((u: any) => 
-             u.email === this.authData.email || u.username === this.authData.username
-         );
-
-         if (isDuplicate) {
-             alert("Email or Username already exists!");
-             return;
-         }
-
-         // Save new user
-         users.push({ ...this.authData });
-         localStorage.setItem('users', JSON.stringify(users));
-         alert("Registration Successful! Please Login.");
-         this.isLoginMode = true;
-         form.resetForm();
-        } else {
-         // LOGIN LOGIC
-         const user = users.find((u: any) => 
-             (u.email === this.authData.loginIdentifier || 
-              u.username === this.authData.loginIdentifier || 
-              u.phone === this.authData.loginIdentifier) && 
-              u.password === this.authData.password
-         );
-
-         if (user) {
-             localStorage.setItem('currentUser', JSON.stringify(user)); // Save session
-             this.router.navigate(['/board']); // Success!
-         } else {
-             alert("Invalid credentials.");
-         }
-        }
+      if (user) {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.router.navigate(['/board']); // Login success (200 OK)
+      } else {
+          alert("Invalid credentials.");
+      }
     }
+  }
 
-    passwordVisible = false;
-
-    // Simple toggle function
-    togglePassword() {
-      this.passwordVisible = !this.passwordVisible;
-    }
+  passwordVisible = false;
+  togglePassword() {
+    this.passwordVisible = !this.passwordVisible;
+  }
 }
