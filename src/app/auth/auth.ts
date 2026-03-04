@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 
 export class AuthComponent {
   isLoginMode = true; // Toggle between Login and Register
+  successMessage: string = '';
 
   // Form Data
   authData = {
@@ -28,6 +29,7 @@ export class AuthComponent {
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
+    this.successMessage = '';
   }
 
   onSubmit(form: NgForm) {
@@ -43,11 +45,12 @@ export class AuthComponent {
     // 2. Wrap existing logic in an HTTP POST request
     this.http.post(endpoint, this.authData).subscribe({
       next: (response) => {
-        // This block executes after the Interceptor returns 200 OK
-        console.log('Mock Auth Response:', response);
+        console.log('Now it shows in Network Tab!');
+        // The Interceptor is working! Now handle the local data
         this.handleAuthLogic(form);
       },
       error: (err) => {
+        console.error('Network Error:', err);
         alert("Server error during authentication.");
       }
     });
@@ -69,10 +72,16 @@ export class AuthComponent {
 
       users.push({ ...this.authData });
       localStorage.setItem('users', JSON.stringify(users));
-      alert("Registration Successful! (200 OK) Please Login.");
-      this.isLoginMode = true;
-      form.resetForm();
+
+      this.successMessage = "Registration Successful! Please Login.";
+      setTimeout(() => {
+        this.isLoginMode = true;
+        this.successMessage = '';
+        form.resetForm();
+      }, 2000);
+
     } else {
+
       const user = users.find((u: any) => 
           (u.email === this.authData.loginIdentifier || 
            u.username === this.authData.loginIdentifier || 
@@ -82,7 +91,12 @@ export class AuthComponent {
 
       if (user) {
           localStorage.setItem('currentUser', JSON.stringify(user));
-          this.router.navigate(['/board']); // Login success (200 OK)
+          this.successMessage = "Login Successful! Redirecting...";
+          
+          // Small delay so the user sees the success message
+          setTimeout(() => {
+            this.router.navigate(['/board']);
+          }, 1500);
       } else {
           alert("Invalid credentials.");
       }

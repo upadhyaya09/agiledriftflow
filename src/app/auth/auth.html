@@ -6,6 +6,10 @@
         <span *ngIf="!isLoginMode">🚀 Create Account</span>
     </h2>
 
+    <div *ngIf="successMessage" class="success-alert">
+      {{ successMessage }}
+    </div>
+
     <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
       
       <div *ngIf="!isLoginMode">
