@@ -15,7 +15,10 @@ import { HttpClient } from '@angular/common/http';
 export class AuthComponent {
   isLoginMode = true; // Toggle between Login and Register
   successMessage: string = '';
-
+  errorMessage: string | null = null;
+  fieldErrors: any = {};
+  passwordVisible = false;
+  
   // Form Data
   authData = {
     email: '',
@@ -27,15 +30,27 @@ export class AuthComponent {
 
   constructor(private router: Router, private http: HttpClient) {}
 
+  clearError(field: string) {
+    if (this.fieldErrors[field]) {
+      this.fieldErrors[field] = null;
+    }
+    this.errorMessage = null; // Also clear any general top-level error
+  }
+
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
     this.successMessage = '';
+    this.fieldErrors = {};
+    this.errorMessage = null;
+  }
+
+  togglePassword() {
+    this.passwordVisible = !this.passwordVisible;
   }
 
   onSubmit(form: NgForm) {
     if (form.invalid) {
       form.control.markAllAsTouched();
-      alert("Please fill in all mandatory fields correctly.");
       return; 
     }
 
@@ -44,14 +59,11 @@ export class AuthComponent {
 
     // 2. Wrap existing logic in an HTTP POST request
     this.http.post(endpoint, this.authData).subscribe({
-      next: (response) => {
-        console.log('Now it shows in Network Tab!');
-        // The Interceptor is working! Now handle the local data
+      next: () => {
         this.handleAuthLogic(form);
       },
-      error: (err) => {
-        console.error('Network Error:', err);
-        alert("Server error during authentication.");
+      error: () => {
+        this.errorMessage = "Server error during authentication.";
       }
     });
   }
@@ -60,13 +72,15 @@ export class AuthComponent {
   private handleAuthLogic(form: NgForm) {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
 
+    this.fieldErrors = {};
+
     if (!this.isLoginMode) {
       const isDuplicate = users.some((u: any) => 
           u.email === this.authData.email || u.username === this.authData.username
       );
 
       if (isDuplicate) {
-          alert("Email or Username already exists!");
+          this.errorMessage = "Email or Username already exists!";
           return;
       }
 
@@ -82,29 +96,29 @@ export class AuthComponent {
 
     } else {
 
-      const user = users.find((u: any) => 
-          (u.email === this.authData.loginIdentifier || 
-           u.username === this.authData.loginIdentifier || 
-           u.phone === this.authData.loginIdentifier) && 
-           u.password === this.authData.password
+      const userExists = users.find((u: any) => 
+        u.email === this.authData.loginIdentifier || 
+        u.username === this.authData.loginIdentifier
       );
 
-      if (user) {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.successMessage = "Login Successful! Redirecting...";
-          
-          // Small delay so the user sees the success message
-          setTimeout(() => {
-            this.router.navigate(['/board']);
-          }, 1500);
-      } else {
-          alert("Invalid credentials.");
+      if (!userExists) {
+        // Show error specifically for the identifier field
+        this.fieldErrors.identifier = "User not found. Check your email/username.";
+        return;
       }
+
+      //  If user exists, check if the password matches
+      if (userExists.password !== this.authData.password) {
+        // Show error specifically for the password field
+        this.fieldErrors.password = "Incorrect password. Please try again.";
+        return;
+      }
+
+      // Success: If both are correct
+      localStorage.setItem('currentUser', JSON.stringify(userExists));
+      this.successMessage = "Login Successful! Redirecting...";
+      this.router.navigate(['/board']);
     }
   }
 
-  passwordVisible = false;
-  togglePassword() {
-    this.passwordVisible = !this.passwordVisible;
-  }
 }

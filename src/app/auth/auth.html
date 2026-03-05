@@ -2,66 +2,63 @@
 <div class="auth-container">
   <div class="auth-card">
     <h2>
-        <span *ngIf="isLoginMode">⚡ Login to AgileDrift</span>
-        <span *ngIf="!isLoginMode">🚀 Create Account</span>
+      <span>{{ isLoginMode ? '⚡ Login to AgileDrift' : '🚀 Create Account' }}</span>
     </h2>
 
-    <div *ngIf="successMessage" class="success-alert">
-      {{ successMessage }}
-    </div>
+    <div *ngIf="successMessage" class="success-alert">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="error-alert">{{ errorMessage }}</div>
 
     <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
       
       <div *ngIf="!isLoginMode">
         <div class="input-group">
-           <label class="field-label">Username <span class="req">*</span></label>
-           <div class="validation-msg" *ngIf="uname.invalid && (uname.touched || authForm.submitted)">Username is required</div>
-           <span class="input-icon">👤</span>
-           <input type="text" name="username" placeholder="Username" [(ngModel)]="authData.username" required #uname="ngModel">
+          <label class="field-label">Username <span class="req">*</span></label>
+          <div class="validation-msg" *ngIf="uname.invalid && (uname.touched || authForm.submitted)">Username is required</div>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" name="username" placeholder="Username" [(ngModel)]="authData.username"
+             (input)="clearError('username')" required #uname="ngModel">
+          </div>
         </div>
     
         <div class="input-group">
-           <label class="field-label">Email Address <span class="req">*</span></label>
-           <div class="validation-msg" *ngIf="emailVar.invalid && (emailVar.touched || authForm.submitted)">Enter a valid email (e.g., name@example.com)</div>
-           <span class="input-icon">✉️</span>
-           <input type="email" name="email" placeholder="Email Address" [(ngModel)]="authData.email" required email #emailVar="ngModel">
-        </div>
-
-        <div class="input-group">
-           <label class="field-label">Phone Number <span class="req">*</span></label>
-           <div class="validation-msg" *ngIf="phoneVar.invalid && (phoneVar.touched || authForm.submitted)">Invalid phone number</div>
-           <span class="input-icon">📞</span>
-           <input type="tel" name="phone" placeholder="Phone Number" [(ngModel)]="authData.phone" required #phoneVar="ngModel">
+          <label class="field-label">Email Address <span class="req">*</span></label>
+          <div class="validation-msg" *ngIf="emailVar.invalid && (emailVar.touched || authForm.submitted)">Valid email required</div>
+          <div class="input-wrapper">
+            <span class="input-icon">✉️</span>
+            <input type="email" name="email" placeholder="Email" [(ngModel)]="authData.email"
+             (input)="clearError('email')" required email #emailVar="ngModel">
+          </div>
         </div>
       </div>
 
       <div *ngIf="isLoginMode">
         <div class="input-group">
-           <label class="field-label">Login Identifier <span class="req">*</span></label>
-           <div class="validation-msg" *ngIf="loginId.invalid && loginId.touched">This field is required</div>
-           <span class="input-icon">👤</span>
-           <input type="text" name="loginId" placeholder="Email, Username, or Phone" [(ngModel)]="authData.loginIdentifier" required #loginId="ngModel">
+          <label class="field-label">Login Identifier <span class="req">*</span></label>
+          <div class="field-error" *ngIf="fieldErrors.identifier">{{ fieldErrors.identifier }}</div>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" name="loginId" placeholder="Email or Username" [(ngModel)]="authData.loginIdentifier" 
+             (input)="clearError('identifier')" required #loginId="ngModel">
+          </div>
         </div>
       </div>
 
       <div class="input-group">
         <label class="field-label">Password <span class="req">*</span></label>
-        <div class="validation-msg" *ngIf="pwd.invalid && (pwd.touched || authForm.submitted)">
+        <div class="field-error" *ngIf="fieldErrors.password">{{ fieldErrors.password }}</div>
+        <div class="validation-msg" *ngIf="pwd.invalid && (pwd.touched || authForm.submitted) && !fieldErrors.password">
           <span *ngIf="pwd.errors?.['required']">Password required</span>
-          <span *ngIf="pwd.errors?.['minlength']">Must be at least 8 characters</span>
+          <span *ngIf="pwd.errors?.['minlength']">Min 8 characters</span>
         </div>
-        <span class="input-icon">🔒</span>
-        <input 
-          [type]="passwordVisible ? 'text' : 'password'" 
-          name="password" 
-          placeholder="Password" 
-          [(ngModel)]="authData.password" 
-          required 
-          minlength="8" 
-          #pwd="ngModel">
-        <span class="eye-icon-toggle" (click)="togglePassword()">
-          {{ passwordVisible ? '👁️' : '🙈' }}
-        </span>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input [type]="passwordVisible ? 'text' : 'password'" name="password" placeholder="Password" [(ngModel)]="authData.password"
+           (input)="clearError('password')" required minlength="8" #pwd="ngModel">
+          <span class="eye-icon-toggle" (click)="togglePassword()">
+            {{ passwordVisible ? '👁️' : '🙈' }}
+          </span>
+        </div>
       </div>
 
       <button type="submit" [disabled]="!authForm.valid" class="btn-primary">
@@ -69,17 +66,9 @@
       </button>
     </form>
 
-    <div class="social-login">
-      <p>Or continue with</p>
-      <button type="button" class="google-btn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18">
-        Google
-      </button>
-    </div>
-
-    <p class="toggle-text" style="margin-top: 20px; color: #666;">
+    <p class="toggle-text">
       {{ isLoginMode ? "New here?" : "Already have an account?" }}
-      <span (click)="onSwitchMode()" style="color: #007bff; cursor: pointer; font-weight: bold;">
+      <span (click)="onSwitchMode()" class="switch-link">
         {{ isLoginMode ? 'Register now' : 'Login instead' }}
       </span>
     </p>
