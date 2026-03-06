@@ -51,7 +51,8 @@ export class BoardComponent implements OnInit {
     priority: 'Medium',
     status: 'todo',
     createdAt: new Date(),
-    deadline: ''
+    deadline: '',
+    progress: 0
   };
  
   constructor(private router: Router, private http: HttpClient) {
@@ -65,6 +66,35 @@ export class BoardComponent implements OnInit {
       this.currentUser = JSON.parse(session);
     }
     this.loadFromLocalStorage();
+  }
+
+  // Method for manual progress changes
+  onProgressChange(task: any) {
+    if (task.progress > 100) task.progress = 100;
+    if (task.progress < 0 || task.progress === null) task.progress = 0;
+    
+    // Automatically move to Done if 100% (Optional logic)
+    if (task.progress === 100 && task.status !== 'done') {
+       this.updateTaskStatus(task, 'done');
+    }
+
+    this.saveToLocalStorage();
+  }
+
+  // Calculate Column Percentage based on tasks within it
+  getColumnProgress(status: string): number {
+    const columnTasks = this.tasks.filter(t => t.status === status);
+    if (columnTasks.length === 0) return 0;
+    const totalProgress = columnTasks.reduce((acc, task) => acc + (task.progress || 0), 0);
+    return Math.round(totalProgress / columnTasks.length);
+  }
+
+  private updateTaskStatus(task: any, newStatus: string) {
+    task.status = newStatus;
+    this.http.post('/api/tasks/move', task).subscribe(() => {
+      this.saveToLocalStorage();
+      this.showToast(`Task completed! Moved to Done.`);
+    });
   }
 
   goToRegister() {
@@ -103,7 +133,10 @@ export class BoardComponent implements OnInit {
       const parsed = JSON.parse(savedData);
       this.tasks = parsed.tasks || [];
       this.columns = parsed.columns || this.columns;
-      this.tasks.forEach(t => t.createdAt = new Date(t.createdAt));
+      this.tasks.forEach(t => {
+        t.createdAt = new Date(t.createdAt);
+        if (t.progress === undefined) t.progress = 0; // Ensure old tasks get progress field
+      });
       this.sortTasks();
     }
   }
@@ -204,7 +237,8 @@ export class BoardComponent implements OnInit {
       priority: 'Medium',
       status: status ,
       createdAt: new Date(),
-      deadline: ''
+      deadline: '',
+      progress: 0
     };
     this.showModal = true;
   }
@@ -220,11 +254,8 @@ export class BoardComponent implements OnInit {
     if (form.valid) {
       const url = this.isEditMode ? '/api/tasks/update' : '/api/tasks/add';
 
-      console.log(`Triggering HTTP POST to: ${url}`);
-
       this.http.post(url, this.newTask).subscribe({
-        next: (response) => {
-          console.log("SUCCESSFUL API CALL RECORDED:", response);
+        next: () => {
           if (this.isEditMode && this.editTaskRef) {
             Object.assign(this.editTaskRef, this.newTask);
             this.showToast("Task updated successfully!", 'info');
@@ -239,8 +270,7 @@ export class BoardComponent implements OnInit {
           this.finalizeTaskSave();
           form.resetForm();
         },
-        error: (err) => {
-          console.error("API CALL FAILED:", err);
+        error: () => {
           this.showToast("Network Error", 'error');
         }
       });
@@ -280,8 +310,11 @@ export class BoardComponent implements OnInit {
   drop(event: CdkDragDrop<any[]>, newStatus: string) {
     const task = event.previousContainer.data[event.previousIndex];
     if (task) {
+      // If moved to Done, set progress to 100%
+      if (newStatus === 'done') task.progress = 100;
+
       const updatedTask = { ...task, status: newStatus };
-      console.log(`Moving Task via API: /api/tasks/move`);
+      
       this.http.post('/api/tasks/move', updatedTask).subscribe({
         next: () => {
           task.status = newStatus;

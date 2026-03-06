@@ -5,10 +5,7 @@
         <div class="avatar-circle">
           {{ currentUser.username?.charAt(0).toUpperCase() }}
         </div>
-        <div class="user-meta">
-          <span class="user-id">{{ currentUser.username }}</span>
-          <span class="user-mail">{{ currentUser.email }}</span>
-        </div>
+        
       </div>
 
       <div class="accounts-card" *ngIf="showAccountMenu">
@@ -70,10 +67,13 @@
   <div class="column" *ngFor="let col of columns; let i = index">
     
     <div class="column-header-container">
-      <h3 class="column-header">
-        {{ col.title }}
-        <span class="task-count">({{ filterTasks(col.status).length }})</span>
-      </h3>
+      <div class="column-header-left">
+        <h3 class="column-header">
+          {{ col.title }}
+          <span class="task-count">({{ filterTasks(col.status).length }})</span>
+        </h3>
+        <span class="column-progress-badge">{{ getColumnProgress(col.status) }}% Done</span>
+      </div>
       <button class="remove-col-btn" (click)="triggerDeleteCol(i)" *ngIf="col.status !== 'todo'">🗑</button>
     </div>
 
@@ -95,6 +95,24 @@
         
         <h4>{{ task.title }}</h4>
         <p>{{ task.description }}</p>
+
+        <div class="task-progress-box">
+          <div class="progress-info">
+            <span>Progress</span>
+            <div class="progress-input-group">
+              <input type="number" 
+                     [(ngModel)]="task.progress" 
+                     (change)="onProgressChange(task)" 
+                     max="100" min="0">%
+            </div>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" 
+                 [style.width.%]="task.progress"
+                 [style.background-color]="task.progress === 100 ? '#4caf50' : '#007bff'">
+            </div>
+          </div>
+        </div>
 
         <div class="task-dates">
           <small>📅 Created: {{ task.createdAt | date:'shortDate' }}</small>
@@ -138,7 +156,7 @@
      [class.info]="notification.type === 'info'">
   
   <div class="toast-content">
-    <span>✅ {{ notification.message }}</span>
+    <span>{{ notification.type === 'error' ? '❌' : '✅' }} {{ notification.message }}</span>
   </div>
 
   <button class="toast-close" (click)="notification.show = false">&times;</button>
@@ -165,6 +183,11 @@
         <small class="text-danger" *ngIf="desc.invalid && (desc.touched || taskForm.submitted)">
           Description is required.
         </small>
+      </div>
+
+      <div class="modal-field" *ngIf="isEditMode">
+        <label style="color: white; font-size: 12px;">Manual Progress (%):</label>
+        <input type="number" name="progress" [(ngModel)]="newTask.progress" min="0" max="100" />
       </div>
 
       <div class="modal-field">
