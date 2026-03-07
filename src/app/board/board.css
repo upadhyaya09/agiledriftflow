@@ -433,7 +433,7 @@ html, body {
   overflow-y: auto;
   padding-right: 6px;
   margin-bottom: 5px;
-  /*min-height: 0;  */           /* 🔑 prevents jump */
+  min-height: 100px;          /* 🔑 prevents jump */
 }
 
 /* scrollbar */
@@ -818,6 +818,7 @@ html, body {
 .column-footer { 
   padding-top: 10px; 
   flex-shrink: 0;
+  margin-top: auto;
 }
 
 .add-task {
@@ -896,6 +897,9 @@ html, body {
     min-width: 100% !important;
     margin-bottom: 20px !important;
     display: block !important;
+    height: auto !important; 
+    max-height: 500px !important; /* Fixed height to force scroll inside column */
+    display: flex !important;
   }
 
   .task-container {
@@ -904,10 +908,13 @@ html, body {
 
   .add-task {
     margin-top: 10px;
+    display: block !important;
+    visibility: visible !important;
+    margin-bottom: 5px;
   }
 
   .task-list {
-    max-height: 320px;
+    max-height: 300px;
   }
 
   .board-title {
