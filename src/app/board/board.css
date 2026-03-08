@@ -13,6 +13,83 @@ html, body {
   overflow: hidden; /* Prevents the whole page from scrolling */
 }
 
+/* ================= PROGRESS DASHBOARD ================= */
+.dashboard-wrapper {
+  padding: 0 20px 25px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.stats-main-card {
+  background: rgba(255, 255, 255, 0.15); /* Glass effect */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.header-text h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.header-text p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  margin: 4px 0;
+}
+
+.overall-progress-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.overall-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00e5ff, #3b82f6); /* Electric blue to Royal blue */
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stats-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.summary-box {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-box .label {
+  display: block;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.summary-box .value {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #00e5ff;
+}
+
 /* ================= BOARD LAYOUT ================= */
 .board {
   display: flex;
@@ -77,8 +154,8 @@ html, body {
 }
 
 .avatar-circle {
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   background: #007bff;
   color: white;
   border-radius: 50%;
@@ -87,6 +164,8 @@ html, body {
   align-items: center;
   font-weight: bold;
   margin-right: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .user-meta {
@@ -227,6 +306,7 @@ html, body {
   border-radius: 25px; /* Pill shape search */
   border: none;
   background: rgba(243, 200, 200, 0.9);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .priority-filter {
@@ -304,6 +384,7 @@ html, body {
 
 .column-header {
   margin: 0;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #1a1a1a;
 }
@@ -459,6 +540,9 @@ html, body {
 .task-card:active {
   cursor: grabbing;
 }
+
+.task-card h4 { margin: 0 0 8px 0; font-size: 1rem; }
+.task-card p { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
 
 .task-card.high { border-left: 6px solid #dc2626; }
 .task-card.medium { border-left: 6px solid #f59e0b; }
@@ -842,14 +926,27 @@ html, body {
 }
 
 /* ================= CDK DRAG PLACEHOLDERS ================= */
-.cdk-drag-placeholder {
-  opacity: 0;
-  display: none;
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
-.cdk-drag-preview {
-  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-  border-radius: 10px;
+.cdk-drag-placeholder {
+  background: rgba(0, 0, 0, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  min-height: 100px; /* Match your card average height */
+  margin-bottom: 15px;
+  border-radius: 12px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.task-container.cdk-drop-list-dragging .task-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* ================= TABLET ================= */

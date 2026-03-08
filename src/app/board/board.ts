@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
@@ -66,6 +66,25 @@ export class BoardComponent implements OnInit {
       this.currentUser = JSON.parse(session);
     }
     this.loadFromLocalStorage();
+  }
+
+  // --- DASHBOARD CALCULATIONS ---
+  get totalTasksCount(): number {
+    return this.tasks.length;
+  }
+
+  get completedTasksCount(): number {
+    // Tasks are "completed" if progress is 100% or they are in 'done'/'delivered'
+    return this.tasks.filter(t => t.progress === 100 || t.status === 'done' || t.status === 'delivered').length;
+  }
+
+  get projectCompletionPercentage(): number {
+    if (this.totalTasksCount === 0) return 0;
+    return Math.round((this.completedTasksCount / this.totalTasksCount) * 100);
+  }
+
+  getTasksCountByStatus(status: string): number {
+    return this.tasks.filter(t => t.status === status).length;
   }
 
   // Method for manual progress changes
@@ -207,7 +226,7 @@ export class BoardComponent implements OnInit {
     return new Date(deadline) <= today;
   }
 
-  filterTasks(status: string) {
+  getFilteredTasksByStatus(status: string) {
     return this.tasks.filter(t => {
       const matchStatus = t.status === status;
       const searchTextLower = this.searchText.toLowerCase();
@@ -308,22 +327,26 @@ export class BoardComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<any[]>, newStatus: string) {
-    const task = event.previousContainer.data[event.previousIndex];
-    if (task) {
-      // If moved to Done, set progress to 100%
-      if (newStatus === 'done') task.progress = 100;
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      // Get the actual task object from the filtered source list
+      const taskToMove = event.previousContainer.data[event.previousIndex];
 
-      const updatedTask = { ...task, status: newStatus };
-      
-      this.http.post('/api/tasks/move', updatedTask).subscribe({
+      // Update the task properties immediately
+      taskToMove.status = newStatus;
+      if (newStatus === 'done') taskToMove.progress = 100;
+
+      // Trigger API (optional) and save state
+      this.http.post('/api/tasks/move', taskToMove).subscribe({
         next: () => {
-          task.status = newStatus;
-          this.sortTasks();
           this.saveToLocalStorage();
           this.showToast(`Moved to ${newStatus}`, 'info');
-        }
+        },
+        error: () => this.saveToLocalStorage() // Still save locally if API fails
       });
     }
+    this.sortTasks(); // Maintain your priority sorting after the drop
   }
 
   sortTasks() {

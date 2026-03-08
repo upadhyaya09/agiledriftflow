@@ -43,6 +43,43 @@
     </div>
   </header>
 
+  <div class="dashboard-wrapper">
+    <div class="stats-main-card">
+      <div class="stats-header">
+        <div class="header-text">
+          <h2>Task Progress</h2>
+          <p>{{ completedTasksCount }} / {{ totalTasksCount }} Tasks Completed — {{ projectCompletionPercentage }}%</p>
+        </div>
+      </div>
+
+      <div class="overall-progress-track">
+        <div class="overall-progress-fill" [style.width.%]="projectCompletionPercentage"></div>
+      </div>
+
+      <div class="stats-summary-grid">
+        <div class="summary-box">
+          <span class="label">Total</span>
+          <span class="value">{{ totalTasksCount }}</span>
+        </div>
+        <div class="summary-box">
+          <span class="label">New Task</span>
+          <span class="value">{{ getTasksCountByStatus('todo') }}</span>
+        </div>
+        <div class="summary-box">
+          <span class="label">In Progress</span>
+          <span class="value">{{ getTasksCountByStatus('progress') }}</span>
+        </div>
+        <div class="summary-box">
+          <span class="label">Completed</span>
+          <span class="value">{{ getTasksCountByStatus('done') }}</span>
+        </div>
+        <div class="summary-box">
+          <span class="label">Delivered</span>
+          <span class="value">{{ getTasksCountByStatus('delivered') }}</span>
+        </div>
+      </div>
+    </div>
+
 </div>
 
 <div class="filter-container">
@@ -70,7 +107,7 @@
       <div class="column-header-left">
         <h3 class="column-header">
           {{ col.title }}
-          <span class="task-count">({{ filterTasks(col.status).length }})</span>
+          <span class="task-count">({{ getFilteredTasksByStatus(col.status).length }})</span>
         </h3>
         <span class="column-progress-badge">{{ getColumnProgress(col.status) }}% Done</span>
       </div>
@@ -80,17 +117,17 @@
     <div class="task-container"
         cdkDropList
         [id]="col.id"
-        [cdkDropListData]="filterTasks(col.status)"
+        [cdkDropListData]="getFilteredTasksByStatus(col.status)"
         [cdkDropListConnectedTo]="connectedTo"
         (cdkDropListDropped)="drop($event, col.status)">
 
-      <div class="empty-state" *ngIf="filterTasks(col.status).length === 0">
+      <div class="empty-state" *ngIf="getFilteredTasksByStatus(col.status).length === 0">
            <div class="empty-icon">{{ getEmptyStateIcon(col.status) }}</div>
            <p>No tasks in {{ col.title }}</p>
       </div>
 
       <div class="task-card {{ task.priority | lowercase }}"
-           *ngFor="let task of filterTasks(col.status)"
+           *ngFor="let task of getFilteredTasksByStatus(col.status)"
            cdkDrag>
         
         <h4>{{ task.title }}</h4>
