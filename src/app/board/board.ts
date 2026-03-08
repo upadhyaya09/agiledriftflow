@@ -19,6 +19,12 @@ export class BoardComponent implements OnInit {
   showEditProfileModal = false;
   
   editingUser = { username: '', email: '', phone: '' };
+  passwordData = {
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+  isPasswordVisible = false;
   searchText = '';
   selectedPriority: string = 'All';
 
@@ -128,17 +134,54 @@ export class BoardComponent implements OnInit {
   }
 
   saveProfileUpdate() {
+    // Password Validation Check
+    if (this.passwordData.newPassword || this.passwordData.confirmPassword) {
+      if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
+        this.showToast("New passwords do not match!", "error");
+        return;
+      }
+      // Note: In a real app, you'd send this.passwordData.oldPassword to your API here
+    }
+
+    // Existing Profile Update Logic
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     const index = users.findIndex((u: any) => u.email === this.currentUser.email);
 
     if (index !== -1) {
-      users[index] = { ...users[index], ...this.editingUser };
+      // Update local storage with new username/password
+      users[index] = { 
+        ...users[index], 
+        username: this.editingUser.username 
+      };
+    
+      // Only update password in storage if a new one was provided
+      if (this.passwordData.newPassword) {
+        users[index].password = this.passwordData.newPassword; 
+      }
+
       localStorage.setItem('users', JSON.stringify(users));
       this.currentUser = users[index];
       localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    
+      // Reset Password Fields & Close
+      this.resetPasswordFields();
       this.showEditProfileModal = false;
       this.showToast("Profile updated successfully!");
     }
+  }
+
+  // Add this helper method to keep things clean
+  private resetPasswordFields() {
+    this.passwordData = {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
+  }
+
+  // Add this method to toggle the state
+  togglePasswordVisibility() {
+    this.isPasswordVisible = !this.isPasswordVisible;
   }
 
   saveToLocalStorage() {
@@ -267,6 +310,11 @@ export class BoardComponent implements OnInit {
     this.editTaskRef = task;
     this.newTask = { ...task };
     this.showModal = true;
+  }
+
+  closeEditModal() {
+    this.showEditProfileModal = false;
+    this.resetPasswordFields();
   }
 
   saveTask(form: NgForm) {

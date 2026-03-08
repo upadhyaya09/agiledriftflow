@@ -306,10 +306,39 @@
       <label>Email (Read Only)</label>
       <input type="email" [(ngModel)]="editingUser.email" disabled />
     </div>
-    <div class="modal-field">
-      <label>Phone Number</label>
-      <input type="tel" [(ngModel)]="editingUser.phone" />
+
+    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+    <div class="modal-field" style="position: relative;">
+      <label>Old Password</label>
+      <input [type]="isPasswordVisible ? 'text' : 'password'" 
+             [(ngModel)]="passwordData.oldPassword" 
+             placeholder="••••••••">
+      <span class="password-toggle" (click)="togglePasswordVisibility()">
+       {{ isPasswordVisible ? '👁️' : '🙈' }}
+      </span>
     </div>
+
+    <div class="modal-field" style="position: relative;">
+      <label>New Password</label>
+      <input [type]="isPasswordVisible ? 'text' : 'password'" 
+             [(ngModel)]="passwordData.newPassword" 
+             placeholder="••••••••">
+      <span class="password-toggle" (click)="togglePasswordVisibility()">
+        {{ isPasswordVisible ? '👁️' : '🙈' }}
+      </span>
+    </div>
+
+    <div class="modal-field" style="position: relative;">
+      <label>Confirm New Password</label>
+      <input [type]="isPasswordVisible ? 'text' : 'password'" 
+             [(ngModel)]="passwordData.confirmPassword" 
+             placeholder="••••••••">
+      <span class="password-toggle" (click)="togglePasswordVisibility()">
+        {{ isPasswordVisible ? '👁️' : '🙈' }}
+      </span>
+    </div>
+
     <div class="modal-actions">
       <button class="cancel" (click)="showEditProfileModal = false">Cancel</button>
       <button class="save" (click)="saveProfileUpdate()">Save Changes</button>
