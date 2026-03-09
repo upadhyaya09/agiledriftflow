@@ -307,36 +307,41 @@
       <input type="email" [(ngModel)]="editingUser.email" disabled />
     </div>
 
-    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
 
-    <div class="modal-field" style="position: relative;">
+    <div class="modal-field">
       <label>Old Password</label>
-      <input [type]="isPasswordVisible ? 'text' : 'password'" 
+      <div class="password-wrapper">
+        <input [type]="isPasswordVisible ? 'text' : 'password'" 
              [(ngModel)]="passwordData.oldPassword" 
              placeholder="••••••••">
-      <span class="password-toggle" (click)="togglePasswordVisibility()">
-       {{ isPasswordVisible ? '👁️' : '🙈' }}
-      </span>
+        <span class="password-toggle" (click)="togglePasswordVisibility()">
+         {{ isPasswordVisible ? '👁️' : '🙈' }}
+        </span>
+      </div>
     </div>
 
-    <div class="modal-field" style="position: relative;">
+    <div class="modal-field">
       <label>New Password</label>
-      <input [type]="isPasswordVisible ? 'text' : 'password'" 
+      <div class="password-wrapper">
+        <input [type]="isPasswordVisible ? 'text' : 'password'" 
              [(ngModel)]="passwordData.newPassword" 
              placeholder="••••••••">
-      <span class="password-toggle" (click)="togglePasswordVisibility()">
-        {{ isPasswordVisible ? '👁️' : '🙈' }}
-      </span>
+        <span class="password-toggle" (click)="togglePasswordVisibility()">
+          {{ isPasswordVisible ? '👁️' : '🙈' }}
+        </span>
+      </div>
     </div>
 
-    <div class="modal-field" style="position: relative;">
+    <div class="modal-field">
       <label>Confirm New Password</label>
-      <input [type]="isPasswordVisible ? 'text' : 'password'" 
+      <div class="password-wrapper">
+        <input [type]="isPasswordVisible ? 'text' : 'password'" 
              [(ngModel)]="passwordData.confirmPassword" 
              placeholder="••••••••">
-      <span class="password-toggle" (click)="togglePasswordVisibility()">
-        {{ isPasswordVisible ? '👁️' : '🙈' }}
-      </span>
+        <span class="password-toggle" (click)="togglePasswordVisibility()">
+          {{ isPasswordVisible ? '👁️' : '🙈' }}
+        </span>
+      </div>
     </div>
 
     <div class="modal-actions">

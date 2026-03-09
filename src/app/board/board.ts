@@ -24,7 +24,7 @@ export class BoardComponent implements OnInit {
     newPassword: '',
     confirmPassword: ''
   };
-  isPasswordVisible = false;
+  isPasswordVisible: boolean = false;
   searchText = '';
   selectedPriority: string = 'All';
 
