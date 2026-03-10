@@ -22,13 +22,13 @@ html, body {
 }
 
 .stats-main-card {
-  background: rgba(255, 255, 255, 0.15); /* Glass effect */
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  background: rgba(15, 23, 42, 0.9); /* Glass effect */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-radius: 20px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 .header-text h2 {
@@ -67,20 +67,29 @@ html, body {
 }
 
 .summary-box {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 12px;
+  /* Darker background makes the cyan/blue numbers POP */
+  background: #1e293b; 
+  padding: 15px 12px;
   border-radius: 12px;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Brighter border for definition */
+  border: 1px solid rgba(0, 229, 255, 0.2); 
+  transition: transform 0.2s ease;
+}
+
+.summary-box:hover {
+  transform: translateY(-3px);
+  border-color: #00e5ff;
 }
 
 .summary-box .label {
   display: block;
-  font-size: 0.65rem;
-  color: rgba(244, 245, 247, 0.5);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .summary-box .value {
@@ -344,9 +353,10 @@ html, body {
   display: block;
   padding: 12px;
   border-radius: 25px; /* Pill shape search */
-  border: none;
-  background: rgba(243, 200, 200, 0.9);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #1e293b; 
+  color: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .priority-filter {
