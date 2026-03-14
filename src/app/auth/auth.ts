@@ -1,18 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
+
+// Import Google Social Login entities
+import { SocialAuthService, GoogleSigninButtonModule, SocialUser } from '@abacritt/angularx-social-login';
+
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, GoogleSigninButtonModule],
   templateUrl: './auth.html',
   styleUrls: ['./auth.css']
 })
 
-export class AuthComponent {
+export class AuthComponent implements OnInit {
   isLoginMode = true; // Toggle between Login and Register
   successMessage: string = '';
   errorMessage: string | null = null;
@@ -28,7 +32,24 @@ export class AuthComponent {
     loginIdentifier: '' // Used for Email/Username/Phone in login
   };
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router, 
+    private http: HttpClient,
+    @Inject(SocialAuthService) private authService: SocialAuthService
+  ) {}
+
+  ngOnInit() {
+    // Listen for Google Sign-In events
+    this.authService.authState.subscribe((user: SocialUser) => {
+      if (user) {
+        console.log('Google User:', user);
+        // Store user and redirect to board
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        this.successMessage = "Google Login Successful! Redirecting...";
+        this.router.navigate(['/board']);
+      }
+    });
+  }
 
   clearError(field: string) {
     if (this.fieldErrors[field]) {
