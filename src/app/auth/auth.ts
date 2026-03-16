@@ -1,22 +1,19 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+//import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-
-// Import Google Social Login entities
-import { SocialAuthService, GoogleSigninButtonModule, SocialUser } from '@abacritt/angularx-social-login';
-
+declare const google:any;
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, FormsModule, GoogleSigninButtonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './auth.html',
   styleUrls: ['./auth.css']
 })
 
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, AfterViewInit {
   isLoginMode = true; // Toggle between Login and Register
   successMessage: string = '';
   errorMessage: string | null = null;
@@ -34,21 +31,44 @@ export class AuthComponent implements OnInit {
 
   constructor(
     private router: Router, 
-    private http: HttpClient,
-    @Inject(SocialAuthService) private authService: SocialAuthService
+    //private http: HttpClient
   ) {}
 
-  ngOnInit() {
-    // Listen for Google Sign-In events
-    this.authService.authState.subscribe((user: SocialUser) => {
-      if (user) {
-        console.log('Google User:', user);
-        // Store user and redirect to board
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.successMessage = "Google Login Successful! Redirecting...";
-        this.router.navigate(['/board']);
-      }
+  ngOnInit() {}
+
+  ngAfterViewInit() {
+
+    google.accounts.id.initialize({
+      client_id: "131038262363-v1h7203mn6c6pb9616sivkknb6rkibos.apps.googleusercontent.com",
+      callback: (response: any) => this.handleGoogleLogin(response)
     });
+
+    google.accounts.id.renderButton(
+      document.getElementById("googleSignInBtn"),
+      {
+        theme: "outline",
+        size: "large",
+        width: 240
+      }
+    );
+
+  }
+
+  handleGoogleLogin(response: any) {
+    console.log("Google Token:", response);
+    const decodedToken = JSON.parse(atob(response.credential.split('.')[1]));
+
+    const googleUser = {
+      username: decodedToken.name,
+      email: decodedToken.email,
+      profilePic: decodedToken.picture,
+      provider: 'google'
+    };
+
+    console.log("Google User Data:", googleUser);
+    localStorage.setItem("currentUser", JSON.stringify(googleUser));
+    this.successMessage = "Google Login Successful! Redirecting...";
+    this.router.navigate(['/board']);
   }
 
   clearError(field: string) {
@@ -72,21 +92,10 @@ export class AuthComponent implements OnInit {
   onSubmit(form: NgForm) {
     if (form.invalid) {
       form.control.markAllAsTouched();
-      return; 
+      return;
     }
 
-    // Determine the mock endpoint based on the mode
-    const endpoint = this.isLoginMode ? '/api/login' : '/api/register';
-
-    // 2. Wrap existing logic in an HTTP POST request
-    this.http.post(endpoint, this.authData).subscribe({
-      next: () => {
-        this.handleAuthLogic(form);
-      },
-      error: () => {
-        this.errorMessage = "Server error during authentication.";
-      }
-    });
+     this.handleAuthLogic(form);
   }
 
   // Moved your original LocalStorage logic here to keep onSubmit clean
@@ -111,8 +120,8 @@ export class AuthComponent implements OnInit {
       this.successMessage = "Registration Successful! Please Login.";
       setTimeout(() => {
         this.isLoginMode = true;
-        this.successMessage = '';
         form.resetForm();
+        this.successMessage = '';
       }, 2000);
 
     } else {

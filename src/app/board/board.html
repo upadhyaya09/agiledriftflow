@@ -3,7 +3,13 @@
     <div class="profile-section" *ngIf="currentUser">
       <div class="profile-pill" (click)="showAccountMenu = !showAccountMenu">
         <div class="avatar-circle">
-          {{ currentUser.username?.charAt(0).toUpperCase() }}
+          <img *ngIf="currentUser.profilePic"
+               [src]="currentUser.profilePic"
+               class="avatar-img"/>
+
+          <span *ngIf="!currentUser?.profilePic">
+            {{ currentUser.username?.charAt(0).toUpperCase() }}
+          </span>
         </div>
         
       </div>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+//import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -55,14 +55,14 @@ export class BoardComponent implements OnInit {
   newTask = {
     title: '',
     description: '',
-    priority: 'Medium',
+    priority: 'medium',
     status: 'todo',
     createdAt: new Date(),
     deadline: '',
     progress: 0
   };
  
-  constructor(private router: Router, private http: HttpClient) {
+  constructor(private router: Router) {
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
   }
@@ -73,6 +73,25 @@ export class BoardComponent implements OnInit {
       this.currentUser = JSON.parse(session);
     }
     this.loadFromLocalStorage();
+  }
+
+  saveToLocalStorage() {
+    const data = { tasks: this.tasks, columns: this.columns };
+    localStorage.setItem('agileDriftData', JSON.stringify(data));
+  }
+
+  loadFromLocalStorage() {
+    const savedData = localStorage.getItem('agileDriftData');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      this.tasks = parsed.tasks || [];
+      this.columns = parsed.columns || this.columns;
+      this.tasks.forEach(t => {
+        t.createdAt = new Date(t.createdAt);
+        if (t.progress === undefined) t.progress = 0; // Ensure old tasks get progress field
+      });
+      this.sortTasks();
+    }
   }
 
   // --- DASHBOARD CALCULATIONS ---
@@ -117,10 +136,9 @@ export class BoardComponent implements OnInit {
 
   private updateTaskStatus(task: any, newStatus: string) {
     task.status = newStatus;
-    this.http.post('/api/tasks/move', task).subscribe(() => {
+
       this.saveToLocalStorage();
       this.showToast(`Task completed! Moved to Done.`);
-    });
   }
 
   goToRegister() {
@@ -146,8 +164,10 @@ export class BoardComponent implements OnInit {
 
     // Existing Profile Update Logic
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const index = users.findIndex((u: any) => u.email === this.currentUser.email);
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
+    const index = users.findIndex((u: any) => u.email === currentUser.email);
+    
     if (index !== -1) {
       // Update local storage with new username/password
       users[index] = { 
@@ -172,12 +192,14 @@ export class BoardComponent implements OnInit {
   }
 
   // Add this helper method to keep things clean
-  private resetPasswordFields() {
-    this.passwordData = {
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+  resetPasswordFields(){
+
+    this.passwordData={
+      oldPassword:'',
+      newPassword:'',
+      confirmPassword:''
     };
+
   }
 
   // Add this method to toggle the state
@@ -185,24 +207,6 @@ export class BoardComponent implements OnInit {
     this.isPasswordVisible = !this.isPasswordVisible;
   }
 
-  saveToLocalStorage() {
-    const data = { tasks: this.tasks, columns: this.columns };
-    localStorage.setItem('agileDriftData', JSON.stringify(data));
-  }
-
-  loadFromLocalStorage() {
-    const savedData = localStorage.getItem('agileDriftData');
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      this.tasks = parsed.tasks || [];
-      this.columns = parsed.columns || this.columns;
-      this.tasks.forEach(t => {
-        t.createdAt = new Date(t.createdAt);
-        if (t.progress === undefined) t.progress = 0; // Ensure old tasks get progress field
-      });
-      this.sortTasks();
-    }
-  }
 
   openColModal() {
     this.newColumnName = '';
@@ -219,12 +223,13 @@ export class BoardComponent implements OnInit {
         canAddTask: false
       };
 
-      this.http.post('/api/columns', newCol).subscribe(() => {
-        this.columns.push(newCol);
-        this.saveToLocalStorage();
-        this.showToast(`Column "${this.newColumnName}" created! `);
-        this.showColModal = false;
-      });
+      this.columns.push(newCol);
+
+      this.saveToLocalStorage();
+
+      this.showToast(`Column "${this.newColumnName}" created`);
+
+      this.showColModal=false;
     }
   }
 
@@ -235,14 +240,22 @@ export class BoardComponent implements OnInit {
   }
 
   confirmDeleteColumn() {
-    if (this.colToDeleteIndex !== null) {
-      const targetCol = this.columns[this.colToDeleteIndex];
-      this.http.delete(`/api/columns/${targetCol.id}`).subscribe(() => {
-        this.columns.splice(this.colToDeleteIndex!, 1);
-        this.saveToLocalStorage();
-        this.showToast(`Column "${targetCol.title}" Deleted `);
-        this.closeDeleteModal();
-      });
+     if(this.colToDeleteIndex!==null){
+
+      const col=this.columns[this.colToDeleteIndex];
+
+      this.columns.splice(this.colToDeleteIndex,1);
+
+      this.tasks=this.tasks.filter(t=>t.status!==col.status);
+
+      this.saveToLocalStorage();
+
+      this.showToast("Column deleted");
+
+      this.colToDeleteIndex=null;
+
+      this.showDeleteColModal=false;
+
     }
   }
 
@@ -285,10 +298,16 @@ export class BoardComponent implements OnInit {
     return this.columns.map(col => col.id);
   }
 
-  showToast(msg: string, type: 'success' | 'info' | 'error' = 'success') {
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.notification = { message: msg, show: true, type };
-    this.toastTimer = setTimeout(() => this.notification.show = false, 2000);
+  showToast(msg:string,type:'success'|'info'|'error'='success'){
+
+    if(this.toastTimer) clearTimeout(this.toastTimer);
+
+    this.notification={message:msg,show:true,type};
+
+    this.toastTimer=setTimeout(()=>{
+      this.notification.show=false;
+    },2000);
+
   }
 
   openAddModal(status: string = 'todo') {
@@ -319,38 +338,39 @@ export class BoardComponent implements OnInit {
   }
 
   saveTask(form: NgForm) {
-    if (form.valid) {
-      const url = this.isEditMode ? '/api/tasks/update' : '/api/tasks/add';
-
-      this.http.post(url, this.newTask).subscribe({
-        next: () => {
-          if (this.isEditMode && this.editTaskRef) {
-            Object.assign(this.editTaskRef, this.newTask);
-            this.showToast("Task updated successfully!", 'info');
-          } else {
-            this.tasks.push({ 
-              ...this.newTask, 
-              id: Date.now(), 
-              createdAt: new Date() 
-            });
-            this.showToast("New task added!");
-          }
-          this.finalizeTaskSave();
-          form.resetForm();
-        },
-        error: () => {
-          this.showToast("Network Error", 'error');
-        }
-      });
-    } else {
+     if(!form.valid){
       form.control.markAllAsTouched();
+      return;
     }
+
+    if(this.isEditMode && this.editTaskRef){
+
+      Object.assign(this.editTaskRef,this.newTask);
+      this.showToast("Task updated","info");
+    } 
+    else 
+    {
+      this.tasks.push({ 
+      ...this.newTask, 
+      id: Date.now(), 
+      createdAt: new Date() 
+      });
+      this.showToast("New task added!");
+    }
+    this.sortTasks();
+
+    this.saveToLocalStorage();
+
+    this.showModal=false;
+
+    form.resetForm();
+
   }
 
-  private finalizeTaskSave() {
+  finalizeTaskSave(){
     this.sortTasks();
     this.saveToLocalStorage();
-    this.showModal = false;
+    this.showModal=false;
   }
 
   triggerDeleteTask(task: any) {
@@ -359,15 +379,17 @@ export class BoardComponent implements OnInit {
   }
 
   confirmDeleteTask() {
-    if (this.taskToDelete) {
-      const taskId = this.taskToDelete.id || 'temp-id';
-      this.http.delete(`/api/tasks/${taskId}`).subscribe(() => {
-        this.tasks = this.tasks.filter(t => t !== this.taskToDelete);
-        this.sortTasks();
-        this.saveToLocalStorage();
-        this.showToast("Task Deleted .");
-        this.showDeleteTaskModal = false;
-      });
+     if(this.taskToDelete){
+
+      this.tasks=this.tasks.filter(t=>t!==this.taskToDelete);
+
+      this.sortTasks();
+      this.saveToLocalStorage();
+
+      this.showToast("Task deleted");
+
+      this.showDeleteTaskModal=false;
+
     }
   }
 
@@ -387,15 +409,13 @@ export class BoardComponent implements OnInit {
       if (newStatus === 'done') taskToMove.progress = 100;
 
       // Trigger API (optional) and save state
-      this.http.post('/api/tasks/move', taskToMove).subscribe({
-        next: () => {
-          this.saveToLocalStorage();
-          this.showToast(`Moved to ${newStatus}`, 'info');
-        },
-        error: () => this.saveToLocalStorage() // Still save locally if API fails
-      });
+      this.showToast(`Moved to ${newStatus}`,"info");
+
     }
-    this.sortTasks(); // Maintain your priority sorting after the drop
+
+    this.sortTasks();
+
+    this.saveToLocalStorage();
   }
 
   sortTasks() {
