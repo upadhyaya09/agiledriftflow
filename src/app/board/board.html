@@ -105,91 +105,99 @@
 
 </div>
 
-<div class="board" cdkDropListGroup>
+<div cdkDropListGroup>
+  <div class="board"
+    cdkDropList
+    [cdkDropListData]="columns"
+    (cdkDropListDropped)="dropColumn($event)"
+    cdkDropListOrientation="horizontal"
+    >
 
-  <div class="column" *ngFor="let col of columns; let i = index">
+    <div class="column" *ngFor="let col of columns; let i = index" cdkDrag>
     
-    <div class="column-header-container">
-      <div class="column-header-left">
-        <h3 class="column-header">
-          {{ col.title }}
-          <span class="task-count">({{ getFilteredTasksByStatus(col.status).length }})</span>
-        </h3>
-        <span class="column-progress-badge">{{ getColumnProgress(col.status) }}% Done</span>
+      <div class="column-header-container" cdkDragHandle>
+        <div class="column-header-left">
+          <h3 class="column-header">
+            {{ col.title }}
+            <span class="task-count">({{ getFilteredTasksByStatus(col.status).length }})</span>
+          </h3>
+          <span class="column-progress-badge">{{ getColumnProgress(col.status) }}% Done</span>
+        </div>
+        <button class="remove-col-btn" (click)="triggerDeleteCol(i)" *ngIf="col.status !== 'todo'">🗑</button>
       </div>
-      <button class="remove-col-btn" (click)="triggerDeleteCol(i)" *ngIf="col.status !== 'todo'">🗑</button>
-    </div>
 
-    <div class="task-container"
-        cdkDropList
-        [id]="col.id"
-        [cdkDropListData]="getFilteredTasksByStatus(col.status)"
-        [cdkDropListConnectedTo]="connectedTo"
-        (cdkDropListDropped)="drop($event, col.status)">
+      <div class="task-container"
+         cdkDropList
+         [id]="col.id"
+         [cdkDropListData]="getFilteredTasksByStatus(col.status)"
+         [cdkDropListConnectedTo]="connectedTo"
+         (cdkDropListDropped)="drop($event, col.status)">
 
-      <div class="empty-state" *ngIf="getFilteredTasksByStatus(col.status).length === 0">
+        <div class="empty-state" *ngIf="getFilteredTasksByStatus(col.status).length === 0">
            <div class="empty-icon">{{ getEmptyStateIcon(col.status) }}</div>
            <p>No tasks in {{ col.title }}</p>
+        </div>
+
+        <div class="task-card {{ task.priority | lowercase }}"
+           *ngFor="let task of getFilteredTasksByStatus(col.status)"
+            cdkDrag
+            [cdkDragData]="tasks">
+        
+          <h4>{{ task.title }}</h4>
+          <p>{{ task.description }}</p>
+
+          <div class="task-progress-box">
+            <div class="progress-info">
+              <span>Progress</span>
+              <div class="progress-input-group">
+                <input type="number" 
+                      [(ngModel)]="task.progress" 
+                      (change)="onProgressChange(task)" 
+                       max="100" min="0">%
+              </div>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" 
+                  [style.width.%]="task.progress"
+                  [style.background-color]="task.progress === 100 ? '#4caf50' : '#007bff'">
+              </div>
+            </div>
+          </div>
+
+          <div class="task-dates">
+            <small>📅 Created: {{ task.createdAt | date:'shortDate' }}</small>
+
+            <small *ngIf="task.deadline" [class.overdue]="isOverdue(task.deadline)">
+              🏁 Due: {{ task.deadline | date:'shortDate' }}
+              <span *ngIf="isOverdue(task.deadline)"> (Urgent!)</span>
+            </small>
+          </div>
+
+          <div class="task-footer">
+            <span class="priority {{ task.priority | lowercase }}">
+               {{ task.priority }}
+            </span>
+
+            <div class="actions">
+              <button (click)="openEditModal(task)">✏️</button>
+              <button (click)="triggerDeleteTask(task)">🗑</button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="task-card {{ task.priority | lowercase }}"
-           *ngFor="let task of getFilteredTasksByStatus(col.status)"
-           cdkDrag>
-        
-        <h4>{{ task.title }}</h4>
-        <p>{{ task.description }}</p>
-
-        <div class="task-progress-box">
-          <div class="progress-info">
-            <span>Progress</span>
-            <div class="progress-input-group">
-              <input type="number" 
-                     [(ngModel)]="task.progress" 
-                     (change)="onProgressChange(task)" 
-                     max="100" min="0">%
-            </div>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" 
-                 [style.width.%]="task.progress"
-                 [style.background-color]="task.progress === 100 ? '#4caf50' : '#007bff'">
-            </div>
-          </div>
-        </div>
-
-        <div class="task-dates">
-          <small>📅 Created: {{ task.createdAt | date:'shortDate' }}</small>
-
-          <small *ngIf="task.deadline" [class.overdue]="isOverdue(task.deadline)">
-            🏁 Due: {{ task.deadline | date:'shortDate' }}
-            <span *ngIf="isOverdue(task.deadline)"> (Urgent!)</span>
-          </small>
-        </div>
-
-        <div class="task-footer">
-          <span class="priority {{ task.priority | lowercase }}">
-             {{ task.priority }}
-          </span>
-
-          <div class="actions">
-            <button (click)="openEditModal(task)">✏️</button>
-            <button (click)="triggerDeleteTask(task)">🗑</button>
-          </div>
-        </div>
+      <div class="column-footer" *ngIf="col.status === 'todo'">
+        <button class="add-task" (click)="openAddModal('todo')">
+          + Add Task
+        </button>
       </div>
     </div>
 
-    <div class="column-footer" *ngIf="col.status === 'todo'">
-      <button class="add-task" (click)="openAddModal('todo')">
-        + Add Task
+    <div class="add-column-center-wrapper">
+      <button class="inline-add-col-btn" (click)="openColModal()">
+        <span>+</span> Add Column
       </button>
     </div>
-  </div>
-
-  <div class="add-column-center-wrapper">
-    <button class="inline-add-col-btn" (click)="openColModal()">
-      <span>+</span> Add Column
-    </button>
   </div>
 </div>
 

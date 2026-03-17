@@ -3,14 +3,16 @@ html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100%;
-  /* This ensures the background image stays fixed while columns scroll */
-  background-image: url('../../assets/images/background.jpg'); /* Ensure path is correct */
+  height: 100vh; /* Fixed to viewport height */
+  /* This ensures the background image stays fixed */
+  background-image: url('../../assets/images/background.jpg'); 
   background-attachment: fixed;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  overflow: hidden; /* Prevents the whole page from scrolling */
+  overflow: hidden; /* CRITICAL: Prevents the whole page from scrolling */
+  display: flex;
+  flex-direction: column; /* Stacks Header, Stats, and Board vertically */
 }
 
 /* ================= PROGRESS DASHBOARD ================= */
@@ -19,6 +21,7 @@ html, body {
   width: 100%;
   box-sizing: border-box;
   animation: fadeIn 0.8s ease-out;
+  flex-shrink: 0;
 }
 
 .stats-main-card {
@@ -26,7 +29,7 @@ html, body {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-radius: 20px;
-  padding: 20px;
+  padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
@@ -63,7 +66,7 @@ html, body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 12px;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .summary-box {
@@ -104,11 +107,12 @@ html, body {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  padding: 20px;
-  height: calc(100vh - 180px);
+  padding: 10px 20px 20px 20px;
+  height: calc(100vh - 280px);
   box-sizing: border-box;
   overflow-x: auto; /* Enable horizontal scrolling */
-  align-items: flex-start;
+  overflow-y: hidden;
+  align-items: stretch;
   scroll-behavior: smooth; /* Smooth scrolling for a premium feel */
 }
 
@@ -137,6 +141,7 @@ html, body {
   border-bottom: none !important; /* Forces the removal of the line */
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 /* These three sections ensure perfect centering */
@@ -262,9 +267,9 @@ html, body {
 }
 
 .logout-button {
-  position: absolute; /* Takes button out of the flow */
+  /*position: absolute; /* Takes button out of the flow 
   top: 20px;
-  right: 20px;
+  right: 20px;*/
   background: #ff4757;
   color: white;
   border: none;
@@ -274,6 +279,7 @@ html, body {
   font-weight: bold;
   box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .logout-btn:hover {
@@ -354,8 +360,9 @@ html, body {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+  flex-shrink: 0;
 }
 
 .search {
@@ -400,9 +407,9 @@ html, body {
 
 /* ================= COLUMN STYLES ================= */
 .column {
-  flex: 1 0 calc(25% - 20px);
-  min-width: 300px; 
-  max-width: 450px; /* Prevents columns from getting too wide on huge monitors */
+  flex: 0 0 320px;
+  /*min-width: 300px; */
+  /*max-width: 450px; /* Prevents columns from getting too wide on huge monitors */
 
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px); /* Blurs the background behind the column */
@@ -431,9 +438,9 @@ html, body {
 .column[id*="delivered"] { border-top: 6px solid #16a34a; }
 
 .column-header-container {
-  display: flex;
+  /*display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-start;*/
   margin-bottom: 12px;
   flex-shrink: 0;
 }
@@ -575,8 +582,8 @@ html, body {
   flex: 1 ;            /* 🔒 stable grow */
   overflow-y: auto;
   padding-right: 6px;
-  margin-bottom: 5px;
-  min-height: 100px;          /* 🔑 prevents jump */
+  margin-bottom: 10px;
+  min-height: 0;          /* 🔑 prevents jump */
 }
 
 /* scrollbar */

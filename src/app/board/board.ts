@@ -397,6 +397,21 @@ export class BoardComponent implements OnInit {
     this.showModal = false;
   }
 
+  dropColumn(event: CdkDragDrop<any[]>) {
+
+    if (event.previousIndex === event.currentIndex) return;
+
+    moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
+
+    this.saveToLocalStorage(); // or your existing save function
+
+    this.showToast("Column order updated", "info");
+  }
+
+  trackByTask(index: number, task: any){
+    return task.id;
+  }
+
   drop(event: CdkDragDrop<any[]>, newStatus: string) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
