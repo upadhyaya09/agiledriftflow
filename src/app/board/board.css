@@ -25,7 +25,7 @@ html, body {
 }
 
 .stats-main-card {
-  background: rgba(15, 23, 42, 0.9); /* Glass effect */
+  background: rgba(112, 122, 146, 0.9); /* Glass effect */
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-radius: 20px;
@@ -136,12 +136,16 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
-  background: transparent; /* Removes any solid background color */
-  border-bottom: none !important; /* Forces the removal of the line */
-  position: relative;
-  z-index: 10;
-  flex-shrink: 0;
+  padding: 15px 25px;
+  background: rgba(15, 23, 42, 0.8); /* Dark glass effect */
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000; /* Stays above everything */
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0; /* Prevents header from squishing */
 }
 
 /* These three sections ensure perfect centering */
@@ -171,8 +175,8 @@ html, body {
 }
 
 .avatar-circle {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   background: #007bff;
   color: white;
   border-radius: 50%;
@@ -191,6 +195,7 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   border-radius: 50%;
 }
 
@@ -438,9 +443,9 @@ html, body {
 .column[id*="delivered"] { border-top: 6px solid #16a34a; }
 
 .column-header-container {
-  /*display: flex;
+  display: flex;
   justify-content: space-between;
-  align-items: flex-start;*/
+  align-items: flex-start;
   margin-bottom: 12px;
   flex-shrink: 0;
 }
@@ -482,7 +487,7 @@ html, body {
 .remove-col-btn {
   background: transparent;
   border: none;
-  color: #1a1a1a;
+  color: #050505;
   font-size: 24px;
   cursor: pointer;
   line-height: 1;
