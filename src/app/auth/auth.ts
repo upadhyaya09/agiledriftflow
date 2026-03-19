@@ -1,10 +1,10 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-//import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-declare const google:any;
+declare const google: any;
+
 @Component({
   selector: 'app-auth',
   standalone: true,
@@ -12,7 +12,6 @@ declare const google:any;
   templateUrl: './auth.html',
   styleUrls: ['./auth.css']
 })
-
 export class AuthComponent implements OnInit, AfterViewInit {
   isLoginMode = true; // Toggle between Login and Register
   successMessage: string = '';
@@ -30,52 +29,72 @@ export class AuthComponent implements OnInit, AfterViewInit {
   };
 
   constructor(
-    private router: Router, 
-    //private http: HttpClient
+    private router: Router,
+    private ngZone: NgZone // Added NgZone to handle navigation back into Angular context
   ) {}
 
   ngOnInit() {}
 
   ngAfterViewInit() {
+    this.tryInitializeGoogle();
+  }
 
+  // New method to handle the "Missing Button" race condition
+  private tryInitializeGoogle() {
+    const interval = setInterval(() => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        this.initializeGoogleButton();
+        clearInterval(interval);
+      }
+    }, 100); // Check every 100ms until the script is loaded
+  }
+
+  private initializeGoogleButton() {
     google.accounts.id.initialize({
       client_id: "131038262363-v1h7203mn6c6pb9616sivkknb6rkibos.apps.googleusercontent.com",
       callback: (response: any) => this.handleGoogleLogin(response)
     });
 
-    google.accounts.id.renderButton(
-      document.getElementById("googleSignInBtn"),
-      {
-        theme: "outline",
-        size: "large",
-        width: 240
-      }
-    );
-
+    const btnContainer = document.getElementById("googleSignInBtn");
+    if (btnContainer) {
+      google.accounts.id.renderButton(
+        btnContainer,
+        {
+          theme: "outline",
+          size: "large",
+          width: 240
+        }
+      );
+    }
   }
 
   handleGoogleLogin(response: any) {
     console.log("Google Token:", response);
+    // Decoding the JWT to get user info
     const decodedToken = JSON.parse(atob(response.credential.split('.')[1]));
 
     const googleUser = {
       username: decodedToken.name,
       email: decodedToken.email,
-      profilePic: decodedToken.picture,
+      profilePic: decodedToken.picture, // This is used for the board header
       provider: 'google'
     };
 
     console.log("Google User Data:", googleUser);
-    localStorage.setItem("currentUser", JSON.stringify(googleUser));
-    this.successMessage = "Google Login Successful! Redirecting...";
-    this.router.navigate(['/board']);
+    
+    // Using ngZone.run to ensure Angular detects the navigation change
+    this.ngZone.run(() => {
+      localStorage.setItem("currentUser", JSON.stringify(googleUser));
+      this.successMessage = "Google Login Successful! Redirecting...";
+      this.router.navigate(['/board']);
+    });
   }
 
   clearError(field: string) {
     if (this.fieldErrors[field]) {
       this.fieldErrors[field] = null;
     }
-    this.errorMessage = null; // Also clear any general top-level error
+    this.errorMessage = null; 
   }
 
   onSwitchMode() {
@@ -83,6 +102,11 @@ export class AuthComponent implements OnInit, AfterViewInit {
     this.successMessage = '';
     this.fieldErrors = {};
     this.errorMessage = null;
+    
+    // Re-render Google button if switching back to login mode
+    if (this.isLoginMode) {
+      setTimeout(() => this.tryInitializeGoogle(), 0);
+    }
   }
 
   togglePassword() {
@@ -94,14 +118,11 @@ export class AuthComponent implements OnInit, AfterViewInit {
       form.control.markAllAsTouched();
       return;
     }
-
-     this.handleAuthLogic(form);
+    this.handleAuthLogic(form);
   }
 
-  // Moved your original LocalStorage logic here to keep onSubmit clean
   private handleAuthLogic(form: NgForm) {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-
     this.fieldErrors = {};
 
     if (!this.isLoginMode) {
@@ -122,33 +143,28 @@ export class AuthComponent implements OnInit, AfterViewInit {
         this.isLoginMode = true;
         form.resetForm();
         this.successMessage = '';
+        this.tryInitializeGoogle(); // Ensure button loads after switching to login
       }, 2000);
 
     } else {
-
       const userExists = users.find((u: any) => 
         u.email === this.authData.loginIdentifier || 
         u.username === this.authData.loginIdentifier
       );
 
       if (!userExists) {
-        // Show error specifically for the identifier field
         this.fieldErrors.identifier = "User not found. Check your email/username.";
         return;
       }
 
-      //  If user exists, check if the password matches
       if (userExists.password !== this.authData.password) {
-        // Show error specifically for the password field
         this.fieldErrors.password = "Incorrect password. Please try again.";
         return;
       }
 
-      // Success: If both are correct
       localStorage.setItem('currentUser', JSON.stringify(userExists));
       this.successMessage = "Login Successful! Redirecting...";
       this.router.navigate(['/board']);
     }
   }
-
 }
