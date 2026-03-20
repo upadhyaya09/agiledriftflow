@@ -1,4 +1,4 @@
-<div class="board-container">
+<div class="board-container" [ngClass]="{'dark-theme': isDarkMode, 'light-theme': !isDarkMode }">
   <header class="main-header">
     <div class="profile-section" *ngIf="currentUser">
       <div class="profile-pill" (click)="showAccountMenu = !showAccountMenu">
@@ -45,6 +45,9 @@
     <h1 class="app-title">AgileDrift</h1>
 
     <div class="action-section">
+      <button class="theme-toggle-btn" (click)="toggleTheme()">
+        {{ isDarkMode ? '☀️ Light' : '🌙 Dark' }}
+      </button>
       <button class="logout-button" (click)="logout()">Logout</button>
     </div>
   </header>

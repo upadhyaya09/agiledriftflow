@@ -1,3 +1,25 @@
+/* ================= THEME VARIABLES (NEW) ================= */
+/* These variables allow the toggle to work without deleting your old code */
+.light-theme {
+  --bg-glass: rgba(112, 122, 146, 0.9);
+  --header-bg: rgba(15, 23, 42, 0.8);
+  --text-main: #ffffff;
+  --column-bg: rgba(255, 255, 255, 0.25);
+  --card-bg: rgb(2, 78, 73);
+  --box-bg: #1e293b;
+  --title-color: #2c29f3;
+}
+
+.dark-theme {
+  --bg-glass: rgba(15, 23, 42, 0.95); /* Deeper dark glass */
+  --header-bg: rgba(7, 10, 19, 0.9);
+  --text-main: #f8fafc;
+  --column-bg: rgba(30, 41, 59, 0.7); /* Dark slate columns */
+  --card-bg: rgba(51, 65, 85, 0.9);   /* Slate task cards */
+  --box-bg: #0f172a;                 /* Deep navy summary boxes */
+  --title-color: #60a5fa;            /* Electric blue for dark mode */
+}
+
 /* ==============GLOBAL & BACKGROUND ========== */
 html, body {
   margin: 0;
@@ -22,12 +44,13 @@ html, body {
   box-sizing: border-box;
   animation: fadeIn 0.8s ease-out;
   flex-shrink: 0;
+  transition: all 0.3s ease; /* Smooth theme transition */
 }
 
 .stats-main-card {
-  background: rgba(112, 122, 146, 0.9); /* Glass effect */
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  background: var(--bg-glass); /* Glass effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -36,7 +59,7 @@ html, body {
 
 .header-text h2 {
   margin: 0;
-  color: #ffffff;
+  color: var(--text-main);
   font-size: 1.2rem;
   font-weight: 700;
 }
@@ -71,7 +94,7 @@ html, body {
 
 .summary-box {
   /* Darker background makes the cyan/blue numbers POP */
-  background: #1e293b; 
+  background: var(--box-bg); 
   padding: 15px 12px;
   border-radius: 12px;
   text-align: center;
@@ -137,7 +160,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 15px 25px;
-  background: rgba(15, 23, 42, 0.8); /* Dark glass effect */
+  background: var(--header-bg); /* Using Variable */
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
@@ -146,6 +169,26 @@ html, body {
   box-sizing: border-box;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0; /* Prevents header from squishing */
+  transition: background 0.3s ease;
+}
+
+/* THEME TOGGLE BUTTON (NEW) */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-right: 15px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 /* These three sections ensure perfect centering */
@@ -263,7 +306,7 @@ html, body {
   margin: 0;
   font-size: 2.5rem;
   font-weight: 800;
-  color: #2c29f3; /* White text looks great on your blurred background */
+  color:var(--title-color); /* Using Variable */
   text-shadow: 2px 2px 10px rgba(93, 93, 255, 0.5); /* Soft purple glow */
   letter-spacing: 1px;
 }
@@ -417,7 +460,7 @@ html, body {
   /*min-width: 300px; */
   /*max-width: 450px; /* Prevents columns from getting too wide on huge monitors */
 
-  background: rgba(255, 255, 255, 0.25);
+  background:var(--column-bg) !important; /* Using Variable */
   backdrop-filter: blur(12px); /* Blurs the background behind the column */
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -435,6 +478,7 @@ html, body {
   overflow: hidden; /* Keeps the column static */
   position: relative;
   border-top: 6px solid #3b82f6; /* Default border */
+  transition: background 0.3s ease;
 }
 
 /* Column Borders */
@@ -461,7 +505,7 @@ html, body {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-main);
 }
 
 .task-count {
@@ -602,7 +646,7 @@ html, body {
 }
 
 .task-card {
-  background: rgb(2, 78, 73);
+  background: var(--card-bg); /* Using Variable */
   color: white;
   padding: 12px;
   border-radius: 10px;
@@ -610,6 +654,7 @@ html, body {
 
   box-shadow: 0 4px 10px rgba(14, 0, 0, 0.1);
   cursor: grab;
+  transition: transform 0.2s ease, background 0.3s ease;
 }
 
 .task-card:active {
@@ -716,7 +761,7 @@ html, body {
 }
 
 .modal {
-  background: rgb(128, 78, 78);
+  background: var(--box-bg); /* Reuse deep navy for modals */
   padding: 30px;
   border-radius: 20px;
 
@@ -724,6 +769,7 @@ html, body {
   max-width: 450px;          /* 🔥 BIGGER POPUP */
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Modal Centering Fix */

@@ -18,6 +18,7 @@ export class BoardComponent implements OnInit {
   currentUser: any;
   showAccountMenu = false;
   showEditProfileModal = false;
+  isDarkMode = false;
   
   editingUser = { username: '', email: '', phone: '' };
   passwordData = {
@@ -92,6 +93,12 @@ export class BoardComponent implements OnInit {
       });
       this.sortTasks();
     }
+  }
+
+  toggleTheme() {
+    this.isDarkMode = !this.isDarkMode;
+    // Optional: Save preference
+    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
   // --- DASHBOARD CALCULATIONS ---
