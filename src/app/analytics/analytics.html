@@ -1,0 +1,55 @@
+<div class="analytics-page">
+  <div class="analytics-container" #reportContent>
+    
+    <header class="analytics-header">
+      <div class="header-left">
+        <a routerLink="/board" class="back-link">← Return to Board</a>
+        <h1>AgileDrift Dashboard</h1>
+        <p>Performance Metrics & Task Analytics</p>
+      </div>
+      <div class="header-right">
+        <button class="download-btn" (click)="downloadPDF()">
+          <span class="icon">📥</span> Export PDF Report
+        </button>
+      </div>
+    </header>
+
+    <div class="stats-overview">
+      <div class="stat-card">
+        <span class="label">Total Tasks</span>
+        <span class="value">{{ tasks.length }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="label">Avg. Completion</span>
+        <span class="value">2.4 Days</span>
+      </div>
+      <div class="stat-card">
+        <span class="label">Efficiency Rate</span>
+        <span class="value">92%</span>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-box">
+        <h3>Workflow Status</h3>
+        <div class="canvas-wrapper">
+          <canvas #statusCanvas></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <h3>Priority Distribution</h3>
+        <div class="canvas-wrapper">
+          <canvas #priorityCanvas></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box full-width">
+        <h3>Weekly Productivity Velocity</h3>
+        <div class="canvas-wrapper trend-box">
+          <canvas #trendCanvas></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import {TaskService} from '../services/task.service';
 //import { HttpClient } from '@angular/common/http';
 
 
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule],
+  imports: [CommonModule, RouterModule, FormsModule, DragDropModule],
   templateUrl: './board.html',
   styleUrls: ['./board.css']
 })
@@ -63,7 +64,7 @@ export class BoardComponent implements OnInit {
     progress: 0
   };
  
-  constructor(private router: Router) {
+  constructor(private router: Router, private taskService: TaskService) {
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
   }
@@ -74,12 +75,22 @@ export class BoardComponent implements OnInit {
       this.currentUser = JSON.parse(session);
     }
     this.loadFromLocalStorage();
+    this.syncTasks();
+  }
+
+  syncTasks() {
+    // Ensure this matches the array name you use for all tasks
+    if (this.tasks) {
+      this.taskService.updateTasks(this.tasks);
+    }
   }
 
   saveToLocalStorage() {
     const data = { tasks: this.tasks, columns: this.columns };
     localStorage.setItem('agileDriftData', JSON.stringify(data));
   }
+
+  
 
   loadFromLocalStorage() {
     const savedData = localStorage.getItem('agileDriftData');
@@ -368,6 +379,8 @@ export class BoardComponent implements OnInit {
 
     this.saveToLocalStorage();
 
+    this.syncTasks();
+
     this.showModal=false;
 
     form.resetForm();
@@ -392,6 +405,7 @@ export class BoardComponent implements OnInit {
 
       this.sortTasks();
       this.saveToLocalStorage();
+      this.syncTasks();
 
       this.showToast("Task deleted");
 
@@ -438,6 +452,7 @@ export class BoardComponent implements OnInit {
     this.sortTasks();
 
     this.saveToLocalStorage();
+    this.syncTasks();
   }
 
   sortTasks() {
